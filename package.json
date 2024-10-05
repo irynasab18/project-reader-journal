@@ -1,0 +1,18 @@
+{
+  "name": "final-project-parcel",
+  "version": "1.0.0",
+  "description": "Reader journal",
+  "scripts": {
+    "dev": "parcel index.html",
+    "build": "parcel build index.html",
+    "clean": "parcel clean"
+  },
+  "author": "Iryna Sabaleuskaya",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.12.0"
+  },
+  "dependencies": {
+    "@parcel/watcher-darwin-arm64": "^2.4.2-alpha.0"
+  }
+}
