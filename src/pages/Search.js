@@ -4,12 +4,12 @@ import Page from '../common/Page.js';
 export default class Search extends Page {
     constructor() {
         super({
-            id: 'main-page',
-            content: this.render(),
+            id: 'main-page'
         });
         this.searchInput = null;
         this.searchBtn = null;
         this.searchStr = null;
+        this.render();
         this.addEventListeners();
     }
 
@@ -32,7 +32,7 @@ export default class Search extends Page {
     }
 
     addEventListeners() {
-        const content = document.querySelector('.container');
+        const content = document.querySelector('.search-container');
         content.addEventListener('click', event => this.callEventHandler(event));
         content.addEventListener('input', event => this.checkFields(event));
     }

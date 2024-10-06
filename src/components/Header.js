@@ -15,9 +15,9 @@ export default class Header extends Section {
                 <img src="${logo}" alt="Логотип">
             </div>
             <nav class="menu" id="mobileMenu">
-                <a href="#" class="menu-item">Читаю сейчас</a>
-                <a href="#" class="menu-item">Все книги</a>
-                <a href="#" class="menu-item">Поиск</a>
+                <a href="#inprocess" class="menu-item">Читаю сейчас</a>
+                <a href="#all" class="menu-item">Все книги</a>
+                <a href="#search" class="menu-item">Поиск</a>
             </nav>
             <div class="auth-buttons">
                 <button class="auth-btn">Выход</button>

@@ -1,4 +1,4 @@
-module.export.STATUSES = {
+module.exports.STATUSES = {
     NOT_STARTED: 'Не начато',
     IN_PROGRESS: 'В процессе',
     POSTPONED: 'Отложено',
@@ -6,7 +6,7 @@ module.export.STATUSES = {
     FINISHED: 'Прочитано'
 };
 
-module.export.GENRES = {
+module.exports.GENRES = {
     FANTASY: 'Фэнтези',
     SCIENCE_FICTION: 'Научная фантастика',
     MAGICAL_REALISM: 'Магический реализм',
@@ -30,7 +30,7 @@ module.export.GENRES = {
     POPULAR_SCIENCE: 'Научпоп'
 };
 
-module.export.TAGS = {
+module.exports.TAGS = {
     FUNNY: 'веселая',
     SAD: 'грустная',
     THRILLING: 'захватывающая',
@@ -49,7 +49,7 @@ module.export.TAGS = {
     REALISTIC: 'реалистичная'
 };
 
-module.export.FORMATS = {
+module.exports.FORMATS = {
     PAPERBOOK: 'Бумажное издание',
     EBOOK: 'Электронная книга',
     AUDIOBOOK: 'Аудиокнига'

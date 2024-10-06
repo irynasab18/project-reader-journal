@@ -1,6 +1,9 @@
 import SignUp from './pages/SignUp.js';
 import SignIn from './pages/SignIn.js';
 //import AddBook from './pages/AddBook.js';
+import MainPage from './pages/MainPage.js';
+import AllBooks from './pages/AllBooks.js';
+import Search from './pages/Search.js';
 import Header from './components/Header.js';
 import ContentContainer from './components/ContentContainer.js';
 import ErrorPage from './pages/Error.js';
@@ -15,6 +18,9 @@ const components = {
 const routes = {
     signup: new SignUp(),
     signin: new SignIn(),
+    mainPage: new MainPage(),
+    allBooks: new AllBooks(),
+    search: new Search(),
     //addBook: new AddBook(),
     error: new ErrorPage(),
 };
@@ -24,11 +30,20 @@ class View {
         this.container = container;
         this.routes = routes;
         this.contentContainer = this.container.querySelector('#content');
+        this.links = this.container.querySelectorAll('#mobileMenu .menu-item');
+        console.log(this.links)
     }
 
     renderContent(pageId) {
         const route = this.routes[pageId] || this.routes['error'];
         this.contentContainer.innerHTML = route.render();
+    }
+
+    updateMenu(activePage) {
+        this.links.forEach((link) => {
+            const href = link.getAttribute('href').substring(1);
+            link.classList.toggle('active', href === activePage);
+        });
     }
 }
 
