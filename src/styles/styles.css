@@ -418,9 +418,9 @@ select {
     box-shadow: 0 0 5px rgba(131, 89, 195, 0.5);
 }
 
-/* Поля для ввода дат */
-.form-input[type="date"] {
-    padding: 0.5rem;
+.form-select option:checked {
+    background-color: #8359C3;
+    color: #fff;
 }
 
 /* Кнопки */

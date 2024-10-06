@@ -1,5 +1,4 @@
 import App from "./src/app.js";
-import './src/styles/styles.css';
 document.addEventListener("DOMContentLoaded", () => {
     const root = document.getElementById("root");
     const app = new App(root);

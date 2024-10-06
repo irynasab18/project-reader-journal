@@ -6,7 +6,7 @@ export default class SmallCard {
         this.cover = cover;
         this.title = title;
         this.author = author;
-        this.options = options
+        this.options = options;
         this.type = type; //to render 1 of 3 card views
     }
 
@@ -64,7 +64,6 @@ export default class SmallCard {
                 <h3 class="book-title">${this.title}</h3>
                 <p class="book-author">${this.author}</p>
                 ${pages}
-
                 ${tags}
             </div>
             ${moreBtn}
@@ -183,13 +182,15 @@ export default class SmallCard {
     }
 
     addStatusInput() {
+        let stats = [];
+
+        for (let status in STATUSES) {
+            stats.push(`<option>${status}</option>`);
+        };
+
         return `<div class="form-group book-status">
         <select id="status" class="form-select">
-            <option>${STATUSES.NOT_STARTED}</option>
-            <option>${STATUSES.IN_PROGRESS}</option>
-            <option>${STATUSES.POSTPONED}</option>
-            <option>${STATUSES.DISCARDED}</option>
-            <option>${STATUSES.FINISHED}</option>
+            ${stats}
         </select>
     </div>`;
     }
@@ -197,7 +198,7 @@ export default class SmallCard {
 
 
 /* <div class="book-card">
-        <div class="book-cover">
+        <div class="book-cover">x
             <img src="${this.cover}" alt="Обложка книги">
         </div>
         <div class="book-info">

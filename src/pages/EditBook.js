@@ -3,122 +3,121 @@ import { STATUSES } from '../utils/dictionaries.js';
 import { GENRES } from '../utils/dictionaries.js';
 import { TAGS } from '../utils/dictionaries.js';
 import { FORMATS } from '../utils/dictionaries.js';
+import { updateBook } from '../utils/data.js';
 
 export default class Edit extends Page {
-    constructor() {
+    constructor(id) {
         super({
-            id: 'add-book',
-            content: `<div class="book-content-container">
-            <h1 class="page-title">Редактирование книги</h1>
-            <form class="book-form">
-                <div class="form-column">
-                    <div class="form-group file-upload">
-                        <div class="file-name-wrapper">
-                            <button type="button" id="remove-file" class="remove-file-btn"
-                                style="display: none;">X</button>
-                            <span id="file-name" class="file-name">Обложка книги</span>
-                        </div>
-                        <input type="file" id="cover-upload" class="form-input-hidden">
-                        <label for="cover-upload" class="btn-add-file btn-outline file-upload-btn">+ Добавить
-                            обложку</label>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="author" class="form-label required">Автор</label>
-                        <input type="text" id="author" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="pages" class="form-label">Количество страниц</label>
-                        <input type="number" id="pages" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="status" class="form-label required">Статус</label>
-                        <select id="status" class="form-select" required>
-                            <option>${STATUSES.NOT_STARTED}</option>
-                            <option>${STATUSES.IN_PROGRESS}</option>
-                            <option>${STATUSES.POSTPONED}</option>
-                            <option>${STATUSES.DISCARDED}</option>
-                            <option>${STATUSES.FINISHED}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="format" class="form-label">Формат</label>
-                        <select id="format" class="form-select">
-                            <option>${FORMATS.PAPERBOOK}</option>
-                            <option>${FORMATS.EBOOK}</option>
-                            <option>${FORMATS.AUDIOBOOK}</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="title" class="form-label required">Название книги</label>
-                        <input type="text" id="title" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="genre" class="form-label required">Жанр</label>
-                        <select id="genre" class="form-select" required>
-                            <option>${GENRES.FANTASY}</option>
-                            <option>${GENRES.SCIENCE_FICTION}</option>
-                            <option>${GENRES.MAGICAL_REALISM}</option>
-                            <option>${GENRES.DYSTOPIAN}</option>
-                            <option>${GENRES.MYSTERY}</option>
-                            <option>${GENRES.HORROR}</option>
-                            <option>${GENRES.THRILLER}</option>
-                            <option>${GENRES.HISTORICAL_FICTION}</option>
-                            <option>${GENRES.ROMANCE}</option>
-                            <option>${GENRES.CONTEMPORARY}</option>
-                            <option>${GENRES.SHORT_STORY}</option>
-                            <option>${GENRES.AUTOBIOGRAPHY}</option>
-                            <option>${GENRES.BIOGRAPHY}</option>
-                            <option>${GENRES.ART}</option>
-                            <option>${GENRES.POPULAR_PSYCOLOGY}</option>
-                            <option>${GENRES.HISTORY}</option>
-                            <option>${GENRES.TRAVEL}</option>
-                            <option>${GENRES.TRUE_CRIME}</option>
-                            <option>${GENRES.HUMOR}</option>
-                            <option>${GENRES.POPULAR_SCIENCE}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="read-pages" class="form-label">Количество прочитанных страниц</label>
-                        <input type="number" id="read-pages" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="expectations" class="form-label">Ожидания</label>
-                        <input type="text" id="expectations" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="tags" class="form-label">Тэги</label>
-                        <select id="tags" class="form-select">
-                            <option>${TAGS.FUNNY}</option>
-                            <option>${TAGS.SAD}</option>
-                            <option>${TAGS.SLOW}</option>
-                            <option>${TAGS.FAST}</option>
-                            <option>${TAGS.AUTUMN}</option>
-                            <option>${TAGS.SUMMER}</option>
-                            <option>${TAGS.WINTER}</option>
-                            <option>${TAGS.SPRING}</option>
-                            <option>${TAGS.EMOTIONAL}</option>
-                            <option>${TAGS.RELAXING}</option>
-                            <option>${TAGS.HOPEFUL}</option>
-                            <option>${TAGS.MYSTERIOUS}</option>
-                            <option>${TAGS.DARK}</option>
-                            <option>${TAGS.TOUCHING}</option>
-                            <option>${TAGS.REALISTIC}</option>
-                        </select>
-                    </div>
-                    <div class="form-buttons">
-                        <button type="button" class="btn btn-outline">Назад</button>
-                        <button type="submit" class="btn btn-primary" disabled>Сохранить</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        </div>`
+            id: 'edit-book',
+            content: this.render()
         });
+        this.id = id;
+        this.bookTitle = null;
+        this.author = null;
+        this.file = null;
+        this.author = null;
+        this.genre = null;
+        this.pages = null;
+        this.status = null;
+        this.format = null;
+        this.readPages = null;
+        this.expectations = null;
+        this.tags = null;
 
         addEventListeners();
+    }
+
+    render() {
+        this.getBookData();
+
+        return `<div class="book-content-container">
+        <h1 class="page-title">Редактирование книги</h1>
+        <form class="book-form">
+            <div class="form-column">
+                <div class="form-group file-upload">
+                    <div class="file-name-wrapper">
+                        <button type="button" id="remove-file" class="remove-file-btn"
+                            style="display: none;">X</button>
+                        <span id="file-name" class="file-name">Обложка книги</span>
+                    </div>
+                    <input type="file" id="cover-upload" class="form-input-hidden">
+                    <label for="cover-upload" class="btn-add-file btn-outline file-upload-btn">+ Добавить
+                        обложку</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="author" class="form-label required">Автор</label>
+                    <input type="text" id="author" class="form-input" required value=${this.author}>
+                </div>
+                <div class="form-group">
+                    <label for="pages" class="form-label">Количество страниц</label>
+                    <input type="number" id="pages" class="form-input" value=${this.pages}>
+                </div>
+                <div class="form-group">
+                    <label for="status" class="form-label required">Статус</label>
+                    <select id="status" class="form-select" required>
+                        ${this.addOptsToList(STATUSES)}
+                        ${this.showSelectedValue(this.status)}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="format" class="form-label">Формат</label>
+                    <select id="format" class="form-select">
+                    ${this.addOptsToList(FORMATS)}
+                    ${this.showSelectedValue(this.format)}
+                    </select>
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="title" class="form-label required">Название книги</label>
+                    <input type="text" id="title" class="form-input" required value=${this.bookTitle}>
+                </div>
+                <div class="form-group">
+                    <label for="genre" class="form-label required">Жанр</label>
+                    <select id="genre" class="form-select" required>
+                        ${this.addOptsToList(GENRES)}
+                        ${this.showSelectedValue(this.genre)}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="read-pages" class="form-label">Количество прочитанных страниц</label>
+                    <input type="number" id="read-pages" class="form-input" value=${this.readPages}>
+                </div>
+                <div class="form-group">
+                    <label for="expectations" class="form-label">Ожидания</label>
+                    <input type="text" id="expectations" class="form-input" value=${this.expectations}>
+                </div>
+                <div class="form-group">
+                    <label for="tags" class="form-label">Тэги</label>
+                    <select id="tags" class="form-select" multiple size="1">
+                        ${this.addOptsToList(TAGS)}
+                        ${this.showSelectedValue(this.tags)}
+                    </select>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-outline">Назад</button>
+                    <button type="submit" class="btn btn-primary" disabled=false>Сохранить</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    </div>`
+    };
+
+    getBookData() {
+        //request to DB and re-assign variables
+        this.bookTitle = null;
+        this.author = null;
+        this.file = null;
+        this.author = null;
+        this.genre = null;
+        this.pages = null;
+        this.status = null;
+        this.format = null;
+        this.readPages = null;
+        this.expectations = null;
+        this.tags = null;
     }
 
     addEventListeners() {
@@ -128,11 +127,18 @@ export default class Edit extends Page {
 
     callEventHandler(event) {
         event.preventDefault();
-        if (event.target.className === 'btn-add-file') {
+        if (event.target.className === 'form-input-hidden') {
             this.uploadFile(event.target);
         }
-        if (event.target.className === 'remove-file') {
+        if (event.target.className === 'remove-file-btn') {
             this.deleteUploadedFile(event.target);
+        }
+        if (event.target.className === 'btn btn-outline') {
+            //open previous page
+        }
+        if (event.target.className === 'btn btn-primary') {
+            this.saveBook();
+            //update book in DB
         }
     }
 
@@ -156,6 +162,82 @@ export default class Edit extends Page {
             document.getElementById('file-name').textContent = 'Обложка книги'; // Возвращаем текст по умолчанию
             this.style.display = 'none'; // Скрываем кнопку удаления
         })
+    }
+
+    addOptsToList(list) {
+        let output = [];
+        for (let elem in list) {
+            output.push(`<option>${elem}</option>`);
+        };
+
+        return output;
+    }
+
+    showSelectedValue(value) {
+        if (Array.isArray(value)) {
+            return value.map(v => `<option selected>${v}</option>`)
+        }
+        return `<option selected>${value}</option>`;
+    }
+
+    checkFields() {
+        const authorInput = document.querySelector('#author'); //madatory
+        const pagesInput = document.querySelector('#pages');
+        const statusInput = document.querySelector('#status'); //madatory
+        const formatInput = document.querySelector('#format');
+        const titleInput = document.querySelector('#title'); //madatory
+        const genreInput = document.querySelector('#genre'); //madatory
+        const pagesReadInput = document.querySelector('#read-pages');
+        const expectationsInput = document.querySelector('#expectations');
+        const tagsInput = document.querySelector('#tags');
+
+        if (authorInput.value) {
+            this.author = authorInput.value;
+        }
+
+        if (pagesInput.value) {
+            this.pages = pagesInput.value;
+        }
+
+        if (statusInput.value) {
+            this.status = statusInput.value;
+        }
+
+        if (formatInput.value) {
+            this.format = formatInput.value;
+        }
+
+        if (titleInput.value) {
+            this.bookTitle = titleInput.value;
+        }
+
+        if (genreInput.value) {
+            this.genre = genreInput.value;
+        }
+
+        if (pagesReadInput.value) {
+            this.readPages = pagesReadInput.value;
+        }
+
+        if (expectationsInput.value) {
+            this.expectations = expectationsInput.value;
+        }
+
+        if (tagsInput.selectedOptions) {
+            this.tags = selectedOptions.map(option => option.value);
+        }
+
+        if (this.author && this.bookTitle && this.genre && this.status) {
+            document.querySelector('.btn-primary').disabled = false;
+        } else {
+            document.querySelector('.btn-primary').disabled = true;
+        }
+    }
+
+    saveBook() {
+        //data object
+        let data = {}; //hash with updated fields
+        updateBook(this.id, data);  //call DB utils
     }
 
 }

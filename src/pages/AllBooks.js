@@ -1,5 +1,6 @@
 import Page from '../common/Page.js';
 import btnLike from '../images/add_like.svg';
+import { getUserBooks } from '../utils/data.js';
 
 export default class AllBooks extends Page {
     constructor() {
@@ -20,8 +21,7 @@ export default class AllBooks extends Page {
 
     render(state) {
         if (state) { //user has data to show
-            //get IN_PROGRESS books
-            const allBooks = 1;
+            const allBooks = this.getUserBooks();
             return `<div class="content-container">
             <div class="content-header">
                 <h1 class="main-page-title">Мои книги</h1>
@@ -53,6 +53,11 @@ export default class AllBooks extends Page {
         или кнопку "Добавить книгу".</p>
         </div>
         </div>`;
+    }
+
+    getUserBooks() {
+        let booksArray = getUserBooks();
+        //put data into html via SmallCards instance?
     }
 
 
