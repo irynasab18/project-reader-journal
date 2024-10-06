@@ -2,7 +2,7 @@ async function performSearch(query) {
     const apiUrl = `https://www.googleapis.com/books/v1/volumes`;
     const queryParams = new URLSearchParams({
         q: query,
-        apiKey: 'AIzaSyA8BSRjtDEV-TkVHFQxAUJ8TdYZdhkcFL8'
+        apiKey: '...'
     });
 
     try {
