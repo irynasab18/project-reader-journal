@@ -1,8 +1,10 @@
+import { appKey } from '../../configs/config.js';
+
 async function performSearch(query) {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes`;
+    const apiUrl = 'https://www.googleapis.com/books/v1/volumes';
     const queryParams = new URLSearchParams({
         q: query,
-        apiKey: '...'
+        apiKey: appKey
     });
 
     try {

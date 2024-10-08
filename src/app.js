@@ -31,10 +31,16 @@ class View {
         this.routes = routes;
         this.contentContainer = this.container.querySelector('#content');
         this.links = this.container.querySelectorAll('#mobileMenu .menu-item');
-        console.log(this.links)
     }
 
     renderContent(pageId) {
+        if (pageId === 'signin' || pageId === 'signup') {
+            this.container.querySelector('#mobileMenu').classList.add('hidden');
+            this.container.querySelector('#mobileMenu').classList.remove('shown');
+        } else {
+            this.container.querySelector('#mobileMenu').classList.remove('hidden');
+            this.container.querySelector('#mobileMenu').classList.add('shown');
+        }
         const route = this.routes[pageId] || this.routes['error'];
         this.contentContainer.innerHTML = route.render();
     }
@@ -66,6 +72,7 @@ class Controller {
     init() {
         this.openSignUp();
         this.handleButtonsClicks();
+        this.handleHashChange();
     }
 
     openSignUp() {
@@ -78,11 +85,40 @@ class Controller {
 
         signUpBtn.addEventListener('click', (event) => this.updateState(event, 'signup'));
         signInBtn.addEventListener('click', (event) => this.updateState(event, 'signin'));
+
+        document.addEventListener('storage', (event) => this.showMainPage(event, 'mainPage'));
     }
 
     updateState(event, state) {
         event.preventDefault();
         this.model.updateState(state);
+
+        if (state === 'signup') {
+            this.handleSignUp();
+        }
+
+        if (state === 'signin') {
+            this.handleSignIn();
+        }
+    }
+
+    showMainPage(event, state) {
+        console.log('MAIN EVENT ', event)
+        this.model.updateState(state);
+    }
+
+    handleHashChange() {
+        const pageId = location.hash.slice(1).toLowerCase();
+        this.model.updateState(pageId);
+    }
+
+    handleSignUp() {
+        routes.signup.addEventListeners();
+    }
+
+    handleSignIn() {
+        console.log('SIGNIN')
+        routes.signin.addEventListeners();
     }
 }
 
@@ -94,12 +130,10 @@ export default class App {
     }
 
     renderComponents() { //SHOULD DIFFER LOGGED IN AND LOGGED OUT USERS TO RENDER HEADER
-        console.log(this.container);
-
         this.container.innerHTML = `
-      ${this.components.header.render(/*true for logged in*/)}
-      ${this.components.content.render()}
-    `;
+            ${this.components.header.render()}
+            ${this.components.content.render()}
+        `;
     }
 
     init() {

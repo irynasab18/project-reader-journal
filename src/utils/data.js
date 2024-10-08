@@ -1,15 +1,57 @@
-//utils to work with DB
 import { STATUSES } from '../utils/dictionaries.js';
+import { auth, myDB } from '../utils/firebase.js';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
-function createUser(name, email, password) {
-    //put new user to DB
-    //return true (if saved) ot false (if error)
+async function registerUser(name, email, password) {
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(auth.currentUser, {
+            displayName: name
+        });
+
+        return auth.currentUser;
+    } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        return { errorCode, errorMessage };
+    }
 }
 
-function getUser(email, password) {
-    //get user by email
-    //compare DB password with received password
-    //return true ot false
+async function loginUser(email, password) {
+    try {
+        let response = await signInWithEmailAndPassword(auth, email, password);
+        //const q = query(collection(db, "cities"), where("capital", "==", true));
+        getUserFromDatabase(response)
+        //return response;
+    } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        return { errorCode, errorMessage };
+    }
+}
+
+async function addUserToDatabase(username, useremail) {
+    try {
+        const docRef = await addDoc(collection(myDB, 'users'), {
+            name: username,
+            email: useremail
+        });
+        return docRef.id;
+    } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        return { errorCode, errorMessage };
+    }
+
+}
+
+async function getUserFromDatabase(userData) {
+    console.log(userData)
+
 }
 
 function addBook(data) {
@@ -37,10 +79,11 @@ function getUserBooks(user, bookStatus = 'all') {
         //return books for Main screen
     }
 };
-module.export = {
+module.exports = {
     getUserBooks,
-    createUser,
-    getUser,
+    registerUser,
+    addUserToDatabase,
+    loginUser,
     addBook,
     updateBook,
     deleteBook,

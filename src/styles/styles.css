@@ -15,6 +15,13 @@ select {
     appearance: auto;
 }
 
+.hidden {
+    display: none;
+}
+
+.shown {
+    display: flex;
+}
 
 
 
@@ -51,7 +58,7 @@ select {
 
 .menu {
     flex-grow: 1;
-    display: flex;
+    /*display: flex;*/
     justify-content: center;
     gap: 1.5rem;
 }
@@ -108,17 +115,20 @@ select {
     font-size: 1rem;
     font-weight: 600;
     transition: background-color 0.3s ease, color 0.3s ease;
+    text-decoration: none;
 }
 
 .auth-btn:hover {
     background-color: #8359C3;
     color: #ffffff;
+    text-decoration: none;
 }
 
 .auth-btn:active {
     background-color: #ffffff;
     color: #55338A;
     border-color: #55338A;
+    text-decoration: none;
 }
 
 

@@ -10,7 +10,7 @@ export default class Search extends Page {
         this.searchBtn = null;
         this.searchStr = null;
         this.render();
-        this.addEventListeners();
+        //this.addEventListeners();
     }
 
     render() {

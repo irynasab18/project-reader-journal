@@ -1,4 +1,5 @@
 import Page from '../common/Page.js';
+import { loginUser } from '../utils/data.js';
 
 export default class SignIn extends Page {
     constructor() {
@@ -31,47 +32,52 @@ export default class SignIn extends Page {
         this.submitBtn = null;
         this.email = null;
         this.password = null;
+        this.user = null;
 
-        addEventListeners();
+        //this.addEventListeners();
     }
 
     addEventListeners() {
-        const content = document.querySelector('.container');
-        content.addEventListener('input', event => this.checkFields(event));
+        const content = document.querySelector('.signin-container');
+        if (content) {
+            content.addEventListener('input', event => this.checkFields(event));
+
+            this.submitBtn = document.querySelector('#signin-submit');
+            this.submitBtn.addEventListener('click', event => this.handleInputData(event));
+        }
     }
 
     checkFields(event) {
         event.preventDefault();
 
-        this.emailInput = document.querySelector('#email');
-        this.passwordInput = document.querySelector('#password');
-        this.submitBtn = document.querySelector('#signin-submit');
+        const emailInput = document.querySelector('#email');
+        const passwordInput = document.querySelector('#password');
 
         if (emailInput.value && passwordInput.value) {
-            submitBtn.disabled = false;
-            submitBtn.addEventListener('click', event => this.getInputData(event));
+            this.submitBtn.disabled = false;
+            this.email = emailInput.value;
+            this.password = passwordInput.value;
         } else {
-            submitBtn.disabled = true;
+            this.submitBtn.disabled = true;
         }
     }
 
-    getInputData(event) {
+    async handleInputData(event) {
         event.preventDefault();
+        event.stopPropagation();
 
-        this.email = this.emailInput.value;
-        this.password = this.passwordInput.value;
+        this.user = await this.handleLogin();
 
-        this.findAndLoginUser();
+        //localStorage.setItem('userId', this.userId);
     }
 
-    findAndLoginUser() {
-        //make req to DB to find email/password pair
-        if (/*found*/ true) {
-            //fetch user book data
-            //render Main screen
-            //with user name and SignOut btn
-        } else {
-            //show error
-        }
+    async handleLogin() {
+        let res = await loginUser(this.email, this.password);
+
+        // return {
+        //     name: displayName,
+        //     email
+        // };
     }
+
 }

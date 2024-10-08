@@ -1,4 +1,5 @@
 import Page from '../common/Page.js';
+import { registerUser, loginUser, addUserToDatabase } from '../utils/data.js';
 
 export default class SignUp extends Page {
     constructor() {
@@ -37,55 +38,58 @@ export default class SignUp extends Page {
         this.name = null;
         this.email = null;
         this.password = null;
-
-        addEventListeners();
+        this.user = null;
+        this.userId = null;
     }
 
     addEventListeners() {
-        const content = document.querySelector('.container');
-        content.addEventListener('input', event => this.checkFields(event));
+        const content = document.querySelector('.signup-container');
+        if (content) {
+            content.addEventListener('input', event => this.checkFields(event));
+
+            this.submitBtn = document.querySelector('#signup-submit');
+            this.submitBtn.addEventListener('click', event => this.handleInputData(event));
+        }
     }
 
     checkFields(event) {
         event.preventDefault();
-        this.nameInput = document.querySelector('#name');
-        this.emailInput = document.querySelector('#email');
-        this.passwordInput = document.querySelector('#password');
-        this.submitBtn = document.querySelector('#signup-submit');
+        event.stopPropagation();
+
+        const nameInput = document.querySelector('#name');
+        const emailInput = document.querySelector('#email');
+        const passwordInput = document.querySelector('#password');
 
         if (nameInput.value && emailInput.value && passwordInput.value) {
-            submitBtn.disabled = false;
-            submitBtn.addEventListener('click', event => this.getInputData(event));
+            this.submitBtn.disabled = false;
+            this.name = nameInput.value;
+            this.email = emailInput.value;
+            this.password = passwordInput.value;
         } else {
-            submitBtn.disabled = true;
+            this.submitBtn.disabled = true;
         }
     }
 
-    getInputData(event) {
+    async handleInputData(event) {
         event.preventDefault();
-        if (this.nameInput.value.length < 2) {
-            //return error
-        }
-        if (!this.emailInput.value.includes('@')) {
-            //return error
-        }
-        if (this.passwordInput.length < 2) {
-            //return error
-        }
+        event.stopPropagation();
 
-        this.name = this.nameInput.value;
-        this.email = this.emailInput.value;
-        this.password = this.passwordInput.value;
+        this.user = await this.handleRegistration();
 
-        this.saveUser();
-        this.loginUser();
+        this.userId = await this.saveUserInDB();
+        localStorage.setItem('userId', this.userId);
     }
 
-    saveUser() {
-        //save user to DB
+    async handleRegistration() {
+        console.log('SAVE')
+        let { displayName, email } = await registerUser(this.name, this.email, this.password);
+        return {
+            name: displayName,
+            email
+        };
     }
 
-    loginUser() {
-        //open main page
+    async saveUserInDB() {
+        return await addUserToDatabase(this.user.name, this.user.email);
     }
 }
