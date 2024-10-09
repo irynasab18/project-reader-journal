@@ -15,12 +15,12 @@ export default class Header extends Section {
                 <img src="${logo}" alt="Логотип">
             </div>
             <nav class="menu hidden" id="mobileMenu">
-                <a href="#inprocess" class="menu-item">Читаю сейчас</a>
+                <a href="#main" class="menu-item">Читаю сейчас</a>
                 <a href="#all" class="menu-item">Все книги</a>
                 <a href="#search" class="menu-item">Поиск</a>
             </nav>
             <div class="auth-buttons">
-                <a href="#logout" id="logout-btn" class="auth-btn hidden">Выход</a>
+                <a href="#start" id="logout-btn" class="auth-btn hidden">Выход</a>
                 <a href="#signup" id="signup-btn" class="auth-btn">Регистрация</a>
                 <a href="#signin" id="signin-btn" class="auth-btn">Вход</a>
             </div>

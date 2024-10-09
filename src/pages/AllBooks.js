@@ -5,14 +5,14 @@ import { getUserBooks } from '../utils/data.js';
 export default class AllBooks extends Page {
     constructor() {
         super({
-            id: 'main-page',
+            id: 'all',
             content: `<div class="main-content-container">
             <div class="content-header">
                 <h1 class="main-page-title">Мои книги</h1>
-                <button class="add-book-btn">
+                <a href="#addbook" id="add-book-btn" class="add-book-btn">
                     <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
                     Добавить книгу
-                </button>
+                </a>
             </div>
     
             <div class="books-container"></div>`,
@@ -22,25 +22,25 @@ export default class AllBooks extends Page {
     render(state) {
         if (state) { //user has data to show
             const allBooks = this.getUserBooks();
-            return `<div class="content-container">
+            return `<div class="main-content-container">
             <div class="content-header">
                 <h1 class="main-page-title">Мои книги</h1>
-                <button class="add-book-btn">
+                <a href="#addbook" id="add-book-btn" class="add-book-btn">
                     <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
                     Добавить книгу
-                </button>
+                </a>
             </div>
     
             <div class="books-container">${allBooks}</div>`
         }
 
-        return `<div class="content-container">
+        return `<div class="main-content-container">
         <div class="content-header">
             <h1 class="main-page-title">Мои книги</h1>
-            <button class="add-book-btn">
-                <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
-                Добавить книгу
-            </button>
+            <a href="#addbook" id="add-book-btn" class="add-book-btn">
+                    <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
+                    Добавить книгу
+                </a>
         </div>
 
         <div class="books-container">${this.showPlaceholder()}</div>`;

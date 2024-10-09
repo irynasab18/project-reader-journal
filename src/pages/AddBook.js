@@ -5,7 +5,7 @@ import { addBook } from '../utils/data.js';
 export default class AddBook extends Page {
     constructor() {
         super({
-            id: 'add-book',
+            id: 'addbook',
             content: `<div class="book-content-container">
             <h1 class="page-title">Добавление книги</h1>
             <form class="book-form">
@@ -32,13 +32,13 @@ export default class AddBook extends Page {
                     <div class="form-group">
                         <label for="status" class="form-label required">Статус</label>
                         <select id="status" class="form-select" required>
-                            ${this.addOptsToList(STATUSES)}
+                            ${addOptsToList(STATUSES)}
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="format" class="form-label">Формат</label>
                         <select id="format" class="form-select">
-                        ${this.addOptsToList(FORMATS)}
+                        ${addOptsToList(FORMATS)}
                         </select>
                     </div>
                 </div>
@@ -50,7 +50,7 @@ export default class AddBook extends Page {
                     <div class="form-group">
                         <label for="genre" class="form-label required">Жанр</label>
                         <select id="genre" class="form-select" required>
-                            ${this.addOptsToList(GENRES)}
+                            ${addOptsToList(GENRES)}
                         </select>
                     </div>
 
@@ -66,7 +66,7 @@ export default class AddBook extends Page {
                     <div class="form-group">
                         <label for="tags" class="form-label">Тэги</label>
                         <select id="tags" class="form-select" multiple size="1">
-                            ${this.addOptsToList(TAGS)}
+                            ${addOptsToList(TAGS)}
                         </select>
                     </div>
                     <div class="form-buttons">
@@ -91,16 +91,19 @@ export default class AddBook extends Page {
         this.expectations = null;
         this.tags = null;
 
-        this.addEventListeners();
+        //this.addEventListeners();
     }
 
     addEventListeners() {
         const content = document.querySelector('.container');
-        content.addEventListener('click', event => this.callEventHandler(event));
-        content.addEventListener('input', event => this.checkFields(event));
+        if (content) {
+            content.addEventListener('click', event => this.callEventHandler(event));
+            content.addEventListener('input', event => this.checkFields(event));
+        }
     }
 
-    callEventHandler(event) {
+    async callEventHandler(event) {
+        console.log(event)
         event.preventDefault();
         if (event.target.className === 'form-input-hidden') {
             this.uploadFile(event.target);
@@ -109,10 +112,11 @@ export default class AddBook extends Page {
             this.deleteUploadedFile(event.target);
         }
         if (event.target.className === 'btn btn-outline') {
-            //open previous page
+            //open previous page - HOW TO CHECK WHICH WAS PREVIOUS?
         }
-        if (event.target.className === 'btn btn-primary') {
-            this.saveBook();
+        if (event.target.type === 'submit') {
+            console.log('CLICK')
+            await this.saveBook();
             //save book to DB
         }
 
@@ -140,16 +144,9 @@ export default class AddBook extends Page {
         })
     }
 
-    addOptsToList(list) {
-        let output = [];
-        for (let elem in list) {
-            output.push(`<option>${elem}</option>`);
-        };
+    checkFields(event) {
+        event.preventDefault();
 
-        return output;
-    }
-
-    checkFields() {
         const authorInput = document.querySelector('#author'); //madatory
         const pagesInput = document.querySelector('#pages');
         const statusInput = document.querySelector('#status'); //madatory
@@ -192,20 +189,46 @@ export default class AddBook extends Page {
             this.expectations = expectationsInput.value;
         }
 
-        if (tagsInput.selectedOptions) {
-            this.tags = selectedOptions.map(option => option.value);
+        if (tagsInput && tagsInput.options) {
+            this.tags = [];
+            for (let opt of tagsInput.options) {
+                if (opt.selected === true) {
+                    this.tags.push(opt.innerText)
+                }
+            }
         }
 
-        if (this.author && this.bookTitle && this.genre && this.status) {
+        if (authorInput.value && titleInput.value && genreInput.value && statusInput.value) {
             document.querySelector('.btn-primary').disabled = false;
         } else {
             document.querySelector('.btn-primary').disabled = true;
         }
     }
 
-    saveBook() {
-        //data object
-        addBook(data); //call DB utils
+    async saveBook() {
+        console.log('save')
+        let data = {
+            userId: sessionStorage.getItem('userId'),
+            title: this.bookTitle,
+            author: this.author,
+            status: this.status,
+            genre: this.genre,
+            pages: this.pages,
+            format: this.format,
+            readPages: this.readPages,
+            expectations: this.expectations,
+            tags: this.tags
+        }
+        let id = await addBook(data); //call DB utils
     }
 
+}
+
+function addOptsToList(list) {
+    let output = [];
+    for (let elem in list) {
+        output.push(`<option>${list[elem]}</option>`);
+    };
+
+    return output;
 }

@@ -1,15 +1,15 @@
 import Page from '../common/Page.js';
-
+import searchIcon from '../images/icon-search.svg';
 
 export default class Search extends Page {
     constructor() {
         super({
-            id: 'main-page'
+            id: 'search'
         });
         this.searchInput = null;
         this.searchBtn = null;
         this.searchStr = null;
-        this.render();
+        //this.render();
         //this.addEventListeners();
     }
 
@@ -20,7 +20,7 @@ export default class Search extends Page {
         </div>
         <div class="search-container">
             <button class="search-button">
-                <img src="icon-search6.svg" alt="Поиск">
+                <img src="${searchIcon}" alt="Поиск">
             </button>
             <input type="text" class="search-input" placeholder="Что будем искать?">
         </div>

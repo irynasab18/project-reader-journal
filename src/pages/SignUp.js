@@ -77,7 +77,9 @@ export default class SignUp extends Page {
         this.user = await this.handleRegistration();
 
         this.userId = await this.saveUserInDB();
-        localStorage.setItem('userId', this.userId);
+        sessionStorage.setItem('userId', this.userId);
+
+        window.location.hash = '#main';
     }
 
     async handleRegistration() {

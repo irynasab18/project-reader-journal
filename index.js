@@ -1,9 +1,8 @@
-import App from "./src/app.js";
-document.addEventListener("DOMContentLoaded", () => {
-    const root = document.getElementById("root");
+import App from './src/app.js';
+document.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('root');
     const app = new App(root);
     app.init();
-
 });
 
 // document.addEventListener('DOMContentLoaded', () => {

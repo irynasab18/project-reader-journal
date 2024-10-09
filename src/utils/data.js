@@ -1,7 +1,7 @@
 import { STATUSES } from '../utils/dictionaries.js';
 import { auth, myDB } from '../utils/firebase.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 
 async function registerUser(name, email, password) {
     try {
@@ -22,9 +22,9 @@ async function registerUser(name, email, password) {
 async function loginUser(email, password) {
     try {
         let response = await signInWithEmailAndPassword(auth, email, password);
-        //const q = query(collection(db, "cities"), where("capital", "==", true));
-        getUserFromDatabase(response)
-        //return response;
+        let userId = await getUserFromDatabase(response);
+
+        return userId;
     } catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -50,34 +50,67 @@ async function addUserToDatabase(username, useremail) {
 }
 
 async function getUserFromDatabase(userData) {
-    console.log(userData)
-
+    const q = query(collection(myDB, "users"), where("email", "==", userData.user.email));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs[0].id;
 }
 
-function addBook(data) {
-    //save book to DB
+async function addBook(data) {
+    try {
+        const docRef = await addDoc(collection(myDB, 'books'), {
+            userId: data.userId,
+            title: data.title,
+            author: data.author,
+            status: data.status,
+            genre: data.genre,
+            pages: data.pages,
+            format: data.format,
+            readPages: data.readPages,
+            expectations: data.expectations,
+            tags: data.tags
+        });
+        return docRef.id;
+    } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        return { errorCode, errorMessage };
+    }
 }
 
-function updateBook(id, data) {
-    //update book in DB
+async function updateBook(id, data) {
+
 }
 
 function deleteBook(id) {
     //delete book from DB
 }
 
-function getBook(id) {
-    //get book's detailed data
+async function getBook(id) {
+    const docRef = doc(db, "books", id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        return docSnap.data();
+    } else {
+        return new Error('Документ не найден');
+    }
 }
 
-function getUserBooks(user, bookStatus = 'all') {
-    let res = get();
-    //use all statuses or passed when method called
-    //make req to db
-    //return array of books with all data
-    if (bookStatus = 'IN_PROGRESS') {
-        //return books for Main screen
+async function getUserBooks(user, bookStatus = 'all') {
+    console.log(user)
+    console.log(bookStatus)
+    const q = query(collection(myDB, "books"),
+        where("status", "==", bookStatus),
+        where("userId", "==", user));
+
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.docs.length) {
+        return querySnapshot.docs;
+    } else {
+        return new Error('Документ не найден');
     }
+
 };
 module.exports = {
     getUserBooks,

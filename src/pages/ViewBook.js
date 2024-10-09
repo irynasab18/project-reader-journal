@@ -1,5 +1,6 @@
 import Page from '../common/Page.js';
 import { getBook, deleteBook } from '../utils/data.js';
+import { STATUSES, GENRES, TAGS, FORMATS } from '../utils/dictionaries.js';
 const cover = './src/images/frame-cover.png';
 const deleteIcon = './src/images/icon-delete.svg';
 const editIcon = './src/images/icon-edit.svg';
@@ -8,8 +9,7 @@ const plusCircle = './src/images/plus-circle.svg';
 export default class ViewBook extends Page {
     constructor(id) {
         super({
-            id: 'view-book',
-            content: this.render()
+            id: 'viewbook'
         });
         this.id = id; //ID to fetch book
 
@@ -140,8 +140,9 @@ export default class ViewBook extends Page {
         }
     }
 
-    getCurrentBook() {
-        getBook(this.id); //call DB utils with book ID?
+    async getCurrentBook() {
+        let book = await getBook(this.id); //call DB utils with book ID?
+        console.log(book)
     }
 
     setGrade() {

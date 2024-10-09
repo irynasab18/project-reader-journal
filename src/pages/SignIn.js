@@ -65,19 +65,14 @@ export default class SignIn extends Page {
     async handleInputData(event) {
         event.preventDefault();
         event.stopPropagation();
-
-        this.user = await this.handleLogin();
-
-        //localStorage.setItem('userId', this.userId);
+        await this.handleLogin();
     }
 
     async handleLogin() {
-        let res = await loginUser(this.email, this.password);
-
-        // return {
-        //     name: displayName,
-        //     email
-        // };
+        this.userId = await loginUser(this.email, this.password);
+        sessionStorage.setItem('userId', this.userId);
+        console.log('LOGIN')
+        window.location.hash = '#main';
     }
 
 }

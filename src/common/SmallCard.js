@@ -1,7 +1,9 @@
 import { STATUSES } from '../utils/dictionaries.js';
+import bookCover from '../images/book-cover.jpeg';
 
 export default class SmallCard {
-    constructor({ id, cover, title, author, type, options = {} }) {
+    constructor(id, cover = bookCover, title, author, type, options = {}) {
+
         this.id = id;
         this.cover = cover;
         this.title = title;
@@ -11,16 +13,18 @@ export default class SmallCard {
     }
 
     render(className = 'card') {
+        console.log('RENDER')
         if (this.type === 'search') {
             return this.constructSearchCard();
         }
 
         if (this.type === 'main') {
-            return constructMainCard();
+            console.log('MAIN')
+            return this.constructMainCard();
         }
 
         if (this.type === 'all') {
-            return constructAllCard();
+            return this.constructAllCard();
         }
 
     }
@@ -41,21 +45,20 @@ export default class SmallCard {
     }
 
     constructMainCard() {
-        let tags = null;
-        let pages = null;
+        let tags = '';
+        let pages = '';
 
-        if (this.options.tags && this.options.tags > 0) {
+        if (this.options.tags && this.options.tags.length > 0) {
             tags = this.addTags();
         }
 
-        if (this.options.readPages && this.options.allPages) {
+        if (this.options.readPages && this.options.allPages && this.options.readPages > 0 && this.options.allPages > 0) {
             pages = this.addPages();
         }
 
         let moreBtn = this.addMoreBtn();
 
-        return `
-        <div class="book-card">
+        let res = `<div class="book-card">
         <div class="book-cover">
             <img src="${this.cover}" alt="Обложка книги">
         </div>
@@ -70,6 +73,8 @@ export default class SmallCard {
         </div>
     </div>
     `;
+
+        return res;
     }
 
     constructAllCard() {
