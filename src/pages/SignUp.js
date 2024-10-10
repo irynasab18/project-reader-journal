@@ -1,5 +1,5 @@
 import Page from '../common/Page.js';
-import { registerUser, loginUser, addUserToDatabase } from '../utils/data.js';
+import { registerUser, addUserToDatabase } from '../utils/data.js';
 
 export default class SignUp extends Page {
     constructor() {

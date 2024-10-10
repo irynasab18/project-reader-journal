@@ -69,9 +69,10 @@ export default class SignIn extends Page {
     }
 
     async handleLogin() {
+        console.log('LOGIN')
         this.userId = await loginUser(this.email, this.password);
         sessionStorage.setItem('userId', this.userId);
-        console.log('LOGIN')
+        
         window.location.hash = '#main';
     }
 

@@ -2,8 +2,7 @@ import { STATUSES } from '../utils/dictionaries.js';
 import bookCover from '../images/book-cover.jpeg';
 
 export default class SmallCard {
-    constructor(id, cover = bookCover, title, author, type, options = {}) {
-
+    constructor(id, type, title, author, cover = bookCover, options = {}) {
         this.id = id;
         this.cover = cover;
         this.title = title;
@@ -19,7 +18,6 @@ export default class SmallCard {
         }
 
         if (this.type === 'main') {
-            console.log('MAIN')
             return this.constructMainCard();
         }
 
@@ -31,7 +29,7 @@ export default class SmallCard {
 
     constructSearchCard() {
         return `
-        <div class="book-card">
+        <div class="book-card" id=${this.id}>
         <div class="book-cover">
             <img src="${this.cover}" alt="Обложка книги">
         </div>
@@ -45,6 +43,7 @@ export default class SmallCard {
     }
 
     constructMainCard() {
+        console.log('MAIN')
         let tags = '';
         let pages = '';
 
@@ -58,7 +57,7 @@ export default class SmallCard {
 
         let moreBtn = this.addMoreBtn();
 
-        let res = `<div class="book-card">
+        let res = `<div class="book-card" id=${this.id}>
         <div class="book-cover">
             <img src="${this.cover}" alt="Обложка книги">
         </div>
@@ -94,7 +93,7 @@ export default class SmallCard {
         let statusInput = this.addStatusInput();
 
         return `
-        <div class="book-card">
+        <div class="book-card" id=${this.id}>
         <div class="book-cover">
             <img src="${this.cover}" alt="Обложка книги">
         </div>

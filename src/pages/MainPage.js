@@ -1,8 +1,7 @@
-import { connectFirestoreEmulator } from 'firebase/firestore';
 import Page from '../common/Page.js';
-import SmallCard from '../common/SmallCard.js';
 import btnLike from '../images/add_like.svg';
 import { getUserBooks } from '../utils/data.js';
+import { normalizeBookCards, drawBookCards } from '../utils/helpers.js';
 
 export default class MainPage extends Page {
     constructor(state) {
@@ -12,7 +11,6 @@ export default class MainPage extends Page {
     }
 
     render() {
-        console.log('render')
         return this.renderInit();
         this.renderAsync();
     }
@@ -35,9 +33,8 @@ export default class MainPage extends Page {
         let bookCards = await getUserBooks(sessionStorage.getItem('userId'), 'В процессе');
 
         if (bookCards && bookCards.length > 0) {
-            let bookObjects = this.normalizeBookCards(bookCards);
-            booksHtml = this.drawBookCards(bookObjects);
-            console.log(booksHtml)
+            let bookObjects = normalizeBookCards(bookCards, 'main');
+            booksHtml = drawBookCards(bookObjects);
 
             return this.drawFullPageWithCards(booksHtml);
         }
@@ -69,55 +66,9 @@ export default class MainPage extends Page {
         this.bookCards = null;
     }
 
-    normalizeBookCards(cardsArray) {
-        let rawBookResponses = cardsArray.map(response => {
-            return {
-                id: response.id,
-                body: response._document.data.value.mapValue.fields
-            };
-        });
-        let bookObjects = rawBookResponses.map(book => {
-            return {
-                id: book.id,
-                body: this.flattenObject(book.body)
-            }
-        });
-        return bookObjects.map(bookItem => {
-            return {
-                id: bookItem.id,
-                title: bookItem.body.title,
-                author: bookItem.body.author,
-                cover: bookItem.body.cover || null, //TEMP - UNTIL COVERS LOADED
-                type: 'main',
-                options: {
-                    pages: bookItem.body.pages,
-                    readPages: bookItem.body.readPages,
-                    format: bookItem.body.format,
-                    genre: bookItem.body.genre,
-                    tags: bookItem.body.tags,
-                    expectations: bookItem.body.expectations
-                }
-            }
-        });
-    }
-
-    drawBookCards(bookObjects) {
-        let cards = bookObjects.map(book => {
-            return new SmallCard(
-                book.id,
-                book.cover,
-                book.title,
-                book.author,
-                book.type,
-                book.options
-            );
-        });
-
-        return cards.map(card => card.render());
-    }
-
     drawFullPageWithCards(cards) {
         let content = cards.join();
+        console.log('CONTENT ', content)
         return `<div class="main-content-container">
         <div class="content-header">
             <h1 class="main-page-title">Читаю сейчас</h1>
@@ -127,26 +78,6 @@ export default class MainPage extends Page {
             </a>
         </div>
         <div class="books-container">${content}</div>`;
-    }
-
-    flattenObject(nestedObject) {
-        const flatObject = {};
-
-        for (const key in nestedObject) {
-            if (nestedObject.hasOwnProperty(key)) {
-                const valueObj = nestedObject[key];
-
-                if (valueObj.hasOwnProperty('stringValue')) {
-                    flatObject[key] = valueObj.stringValue;
-                } else if (valueObj.hasOwnProperty('nullValue')) {
-                    flatObject[key] = null;
-                } else if (valueObj.hasOwnProperty('arrayValue')) {
-                    flatObject[key] = valueObj.arrayValue.values || [];
-                }
-            }
-        }
-
-        return flatObject;
     }
 
 }

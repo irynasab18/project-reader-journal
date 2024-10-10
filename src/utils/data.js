@@ -9,6 +9,7 @@ async function registerUser(name, email, password) {
         await updateProfile(auth.currentUser, {
             displayName: name
         });
+        console.log(auth.currentUser)
 
         return auth.currentUser;
     } catch (error) {
@@ -20,11 +21,16 @@ async function registerUser(name, email, password) {
 }
 
 async function loginUser(email, password) {
+    console.log('LOGIN data')
     try {
         let response = await signInWithEmailAndPassword(auth, email, password);
-        let userId = await getUserFromDatabase(response);
+        if (response) {
+            let userId = await getUserFromDatabase(response);
+            return userId;
+        } else {
+            return new Error('Что-то пошло не так');
+        }
 
-        return userId;
     } catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -98,11 +104,15 @@ async function getBook(id) {
 }
 
 async function getUserBooks(user, bookStatus = 'all') {
-    console.log(user)
-    console.log(bookStatus)
-    const q = query(collection(myDB, "books"),
-        where("status", "==", bookStatus),
-        where("userId", "==", user));
+    let q;
+    if (bookStatus !== 'all') {
+        q = query(collection(myDB, "books"),
+            where("status", "==", bookStatus),
+            where("userId", "==", user));
+    } else {
+        q = query(collection(myDB, "books"),
+            where("userId", "==", user));
+    }
 
     const querySnapshot = await getDocs(q);
     if (querySnapshot.docs.length) {

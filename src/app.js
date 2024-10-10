@@ -61,7 +61,7 @@ class View {
         console.log(route.id)
         this.contentContainer.innerHTML = route.render();
 
-        if (route.id === 'main') {
+        if (route.id === 'main' || route.id === 'all') {
             route.renderAsync();
         }
     }
