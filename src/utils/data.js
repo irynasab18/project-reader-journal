@@ -1,7 +1,7 @@
 import { STATUSES } from '../utils/dictionaries.js';
 import { auth, myDB } from '../utils/firebase.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { collection, addDoc, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, doc, getDoc, runTransaction, deleteDoc, arrayUnion } from "firebase/firestore";
 
 async function registerUser(name, email, password) {
     try {
@@ -9,7 +9,6 @@ async function registerUser(name, email, password) {
         await updateProfile(auth.currentUser, {
             displayName: name
         });
-        console.log(auth.currentUser)
 
         return auth.currentUser;
     } catch (error) {
@@ -21,7 +20,6 @@ async function registerUser(name, email, password) {
 }
 
 async function loginUser(email, password) {
-    console.log('LOGIN data')
     try {
         let response = await signInWithEmailAndPassword(auth, email, password);
         if (response) {
@@ -62,38 +60,162 @@ async function getUserFromDatabase(userData) {
 }
 
 async function addBook(data) {
+    console.log(data)
     try {
         const docRef = await addDoc(collection(myDB, 'books'), {
             userId: data.userId,
             title: data.title,
             author: data.author,
+            cover: data.cover,
             status: data.status,
             genre: data.genre,
             pages: data.pages,
             format: data.format,
             readPages: data.readPages,
             expectations: data.expectations,
-            tags: data.tags
+            tags: data.tags,
+            quotes: [],
+            notes: []
         });
+        console.log("Transaction successfully committed!");
+        console.log(docRef)
         return docRef.id;
     } catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log("Transaction failed: ", error);
 
         return { errorCode, errorMessage };
     }
 }
 
 async function updateBook(id, data) {
+    const sfDocRef = doc(myDB, "books", id);
+    const newTitle = data.title;
+    const newAuthor = data.author;
+    const newCover = data.cover;
+    const newStatus = data.status;
+    const newGenre = data.genre;
+    const newPages = data.pages;
+    const newFormat = data.format;
+    const newReadPages = data.readPages;
+    const newExpectations = data.expectations;
+    const newTags = data.tags;
 
+    try {
+        await runTransaction(myDB, async (transaction) => {
+            const sfDoc = await transaction.get(sfDocRef);
+            if (!sfDoc.exists()) {
+                throw "Document does not exist!";
+            }
+
+            transaction.update(sfDocRef, {
+                title: newTitle,
+                author: newAuthor,
+                cover: newCover,
+                status: newStatus,
+                genre: newGenre,
+                pages: newPages,
+                format: newFormat,
+                readPages: newReadPages,
+                tags: newTags,
+                expectations: newExpectations
+            });
+        });
+        console.log("Transaction successfully committed!");
+    } catch (e) {
+        console.log("Transaction failed: ", e);
+    }
 }
 
-function deleteBook(id) {
-    //delete book from DB
+async function updateBookStatus(id, newStatus) {
+    const sfDocRef = doc(myDB, "books", id);
+    console.log('BOOK ', sfDocRef)
+    try {
+        await runTransaction(myDB, async (transaction) => {
+            const sfDoc = await transaction.get(sfDocRef);
+            if (!sfDoc.exists()) {
+                throw "Document does not exist!";
+            }
+
+            transaction.update(sfDocRef, {
+                status: newStatus
+            });
+        });
+        console.log("Transaction successfully committed!");
+    } catch (e) {
+        console.log("Transaction failed: ", e);
+    }
+}
+
+async function addQuote(id, value) {
+    const sfDocRef = doc(myDB, "books", id);
+    try {
+        await runTransaction(myDB, async (transaction) => {
+            const sfDoc = await transaction.get(sfDocRef);
+            if (!sfDoc.exists()) {
+                throw "Document does not exist!";
+            }
+
+            transaction.update(sfDocRef, {
+                quotes: arrayUnion(value)
+            });
+        });
+        console.log("Transaction successfully committed!");
+    } catch (e) {
+        console.log("Transaction failed: ", e);
+    }
+}
+
+async function addNote(id, value) {
+    const sfDocRef = doc(myDB, "books", id);
+    try {
+        await runTransaction(myDB, async (transaction) => {
+            const sfDoc = await transaction.get(sfDocRef);
+            if (!sfDoc.exists()) {
+                throw "Document does not exist!";
+            }
+
+            transaction.update(sfDocRef, {
+                notes: arrayUnion(value)
+            });
+        });
+        console.log("Transaction successfully committed!");
+    } catch (e) {
+        console.log("Transaction failed: ", e);
+    }
+}
+
+async function setBookGrade(id, value) {
+    const sfDocRef = doc(myDB, "books", id);
+    try {
+        await runTransaction(myDB, async (transaction) => {
+            const sfDoc = await transaction.get(sfDocRef);
+            if (!sfDoc.exists()) {
+                throw "Document does not exist!";
+            }
+            transaction.update(sfDocRef, {
+                grade: value
+            });
+        });
+        console.log("Transaction successfully committed!");
+    } catch (e) {
+        console.log("Transaction failed: ", e);
+    }
+}
+
+async function deleteBook(id) {
+    try {
+        console.log('DEL DB')
+        await deleteDoc(doc(myDB, "books", id));
+        console.log("Transaction successfully committed!");
+    } catch (error) {
+        console.log("Transaction failed: ", error);
+    }
 }
 
 async function getBook(id) {
-    const docRef = doc(db, "books", id);
+    const docRef = doc(myDB, "books", id);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -129,6 +251,10 @@ module.exports = {
     loginUser,
     addBook,
     updateBook,
+    updateBookStatus,
     deleteBook,
-    getBook
+    getBook,
+    setBookGrade,
+    addQuote,
+    addNote
 };

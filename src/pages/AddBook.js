@@ -1,6 +1,7 @@
 import Page from '../common/Page.js';
 import { STATUSES, GENRES, TAGS, FORMATS } from '../utils/dictionaries.js';
 import { addBook } from '../utils/data.js';
+import { addOptsToList } from '../utils/helpers.js';
 
 export default class AddBook extends Page {
     constructor() {
@@ -81,8 +82,7 @@ export default class AddBook extends Page {
 
         this.bookTitle = null;
         this.author = null;
-        this.file = null;
-        this.author = null;
+        this.cover = null;
         this.genre = null;
         this.pages = null;
         this.status = null;
@@ -90,8 +90,6 @@ export default class AddBook extends Page {
         this.readPages = null;
         this.expectations = null;
         this.tags = null;
-
-        //this.addEventListeners();
     }
 
     addEventListeners() {
@@ -100,39 +98,46 @@ export default class AddBook extends Page {
             content.addEventListener('click', event => this.callEventHandler(event));
             content.addEventListener('input', event => this.checkFields(event));
         }
+
+        const fileInput = document.getElementById('cover-upload');
+        if (fileInput) {
+            console.log(fileInput)
+            fileInput.addEventListener('change', function (event) {
+                console.log('Change event triggered');
+                this.uploadFile(event);
+            });
+        }
     }
 
     async callEventHandler(event) {
-        console.log(event)
         event.preventDefault();
-        if (event.target.className === 'form-input-hidden') {
-            this.uploadFile(event.target);
+        if (event.target.id === 'cover-upload') {
+            this.uploadFile(event);
         }
         if (event.target.className === 'remove-file-btn') {
             this.deleteUploadedFile(event.target);
         }
         if (event.target.className === 'btn btn-outline') {
-            //open previous page - HOW TO CHECK WHICH WAS PREVIOUS?
+            history.back();
         }
         if (event.target.type === 'submit') {
-            console.log('CLICK')
             await this.saveBook();
-            //save book to DB
+            history.back();
         }
 
     }
 
-    uploadFile(elem) {
-        elem.addEventListener('change', event => {
-            event.preventDefault();
-            const fileName = this.files[0] ? this.files[0].name : 'Обложка книги';
-            document.getElementById('file-name').textContent = fileName;
+    uploadFile(event) {
+        event.preventDefault()
+        console.log(event)
+        const fileName = event.target.files[0] ? event.target.files[0].name : 'Обложка книги';
+        document.getElementById('file-name').textContent = fileName;
 
-            if (this.files[0]) {
-                document.getElementById('remove-file').style.display = 'inline-block';
-            }
-        });
-    }
+        if (event.target.files[0]) {
+            document.getElementById('remove-file').style.display = 'inline-block';
+        }
+    };
+
 
     deleteUploadedFile(elem) {
         elem.addEventListener('click', event => {
@@ -193,7 +198,7 @@ export default class AddBook extends Page {
             this.tags = [];
             for (let opt of tagsInput.options) {
                 if (opt.selected === true) {
-                    this.tags.push(opt.innerText)
+                    this.tags.push(opt.innerText);
                 }
             }
         }
@@ -206,11 +211,11 @@ export default class AddBook extends Page {
     }
 
     async saveBook() {
-        console.log('save')
         let data = {
             userId: sessionStorage.getItem('userId'),
             title: this.bookTitle,
             author: this.author,
+            cover: this.cover,
             status: this.status,
             genre: this.genre,
             pages: this.pages,
@@ -224,11 +229,3 @@ export default class AddBook extends Page {
 
 }
 
-function addOptsToList(list) {
-    let output = [];
-    for (let elem in list) {
-        output.push(`<option>${list[elem]}</option>`);
-    };
-
-    return output;
-}

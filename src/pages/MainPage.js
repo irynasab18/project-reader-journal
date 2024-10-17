@@ -1,3 +1,4 @@
+import { waitForPendingWrites } from 'firebase/firestore';
 import Page from '../common/Page.js';
 import btnLike from '../images/add_like.svg';
 import { getUserBooks } from '../utils/data.js';
@@ -8,14 +9,18 @@ export default class MainPage extends Page {
         super({
             id: 'main'
         });
+        this.foundData = null;
     }
 
-    render() {
-        return this.renderInit();
-        this.renderAsync();
-    }
-
-    renderInit() {
+    render(dataReceived = false) {
+        if (dataReceived && this.foundData) {
+            const bookContainer = document.querySelector('.books-container');
+            if (bookContainer) {
+                bookContainer.innerHTML = this.foundData;
+            } else {
+                window.location.hash = '#main';
+            }
+        }
         return `<div class="main-content-container">
         <div class="content-header">
             <h1 class="main-page-title">Читаю сейчас</h1>
@@ -24,8 +29,22 @@ export default class MainPage extends Page {
                     Добавить книгу
                 </a>
         </div>
-
         <div class="books-container">${this.showPlaceholder()}</div>`;
+    }
+
+    addEventListeners() {
+        const bookContainer = document.querySelector('.books-container');
+        bookContainer.addEventListener('click', event => this.callEventHandler(event));
+
+    }
+
+    callEventHandler(event) {
+        event.preventDefault();
+        if (event.target.id === 'view-book') {
+            event.preventDefault();
+            sessionStorage.setItem('bookId', event.target.parentNode.parentNode.parentNode.id);
+            window.location.hash = '#viewbook';
+        }
     }
 
     async renderAsync() {
@@ -38,16 +57,6 @@ export default class MainPage extends Page {
 
             return this.drawFullPageWithCards(booksHtml);
         }
-
-        // return `<div class="main-content-container">
-        // <div class="content-header">
-        //     <h1 class="main-page-title">Читаю сейчас</h1>
-        //     <a href="#addBook" id="add-book-btn" class="add-book-btn">
-        //             <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
-        //             Добавить книгу
-        //         </a>
-        // </div>
-        // <div class="books-container">${this.showPlaceholder()}</div>`;
     }
 
     showPlaceholder() {
@@ -67,17 +76,8 @@ export default class MainPage extends Page {
     }
 
     drawFullPageWithCards(cards) {
-        let content = cards.join();
-        console.log('CONTENT ', content)
-        return `<div class="main-content-container">
-        <div class="content-header">
-            <h1 class="main-page-title">Читаю сейчас</h1>
-            <a href="#addbook" id="add-book-btn" class="add-book-btn">
-                <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
-                Добавить книгу
-            </a>
-        </div>
-        <div class="books-container">${content}</div>`;
+        this.foundData = cards.join('');;
+        this.render(true);
     }
 
 }

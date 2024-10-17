@@ -8,7 +8,7 @@ export default class Page {
     return `<main class="${className}">${this.content}</main>`;
   }
 
-  async renderAsync(className = 'container') {
-    return await `<main class="${className}">${this.content}</main>`;
-  }
+  // async renderAsync(className = 'container') {
+  //   return await `<main class="${className}">${this.content}</main>`;
+  // }
 }

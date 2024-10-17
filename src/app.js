@@ -2,7 +2,8 @@ import Start from './pages/Start.js';
 import SignUp from './pages/SignUp.js';
 import SignIn from './pages/SignIn.js';
 import AddBook from './pages/AddBook.js';
-import ViewBook from './pages/AddBook.js';
+import ViewBook from './pages/ViewBook.js';
+import EditBook from './pages/EditBook.js';
 import MainPage from './pages/MainPage.js';
 import AllBooks from './pages/AllBooks.js';
 import Search from './pages/Search.js';
@@ -26,6 +27,7 @@ const routes = {
     search: new Search(),
     addbook: new AddBook(),
     viewbook: new ViewBook(),
+    editbook: new EditBook(),
     error: new ErrorPage(),
 };
 
@@ -34,7 +36,8 @@ class View {
         this.container = container;
         this.routes = routes;
         this.contentContainer = this.container.querySelector('#content');
-        this.links = this.container.querySelectorAll('#mobileMenu .menu-item'); //add all possible links/btns
+        this.links = [...this.container.querySelectorAll('#mobileMenu .menu-item'),
+        ...this.container.querySelectorAll('#authButtons .auth-btn')];
     }
 
     renderContent(pageId) {
@@ -58,20 +61,19 @@ class View {
             this.container.querySelector('#signin-btn').classList.remove('shown');
         }
         const route = this.routes[pageId] || this.routes['error'];
-        console.log(route.id)
         this.contentContainer.innerHTML = route.render();
 
-        if (route.id === 'main' || route.id === 'all') {
+        if (route.id === 'main' || route.id === 'all' || route.id === 'viewbook' || route.id === 'editbook') {
             route.renderAsync();
         }
     }
 
-    updateMenu(activePage) {
-        this.links.forEach((link) => {
-            const href = link.getAttribute('href').substring(1);
-            link.classList.toggle('active', href === activePage);
-        });
-    }
+    // updateMenu(activePage) {
+    //     this.links.forEach((link) => {
+    //         const href = link.getAttribute('href').substring(1);
+    //         link.classList.toggle('active', href === activePage);
+    //     });
+    // }
 }
 
 class Model {
@@ -92,64 +94,62 @@ class Controller {
     }
 
     init() {
+        sessionStorage.removeItem('userId');
         this.openStartPage();
-        this.handleButtonsClicks();
         this.handleHashChange();
+
+        // window.addEventListener('DOMContentLoaded', (event) => {
+        //     const lastPage = localStorage.getItem('lastPage');
+        //     if (lastPage) {
+        //         this.model.updateState(lastPage);
+        //     } else {
+        //         this.model.updateState('main');
+        //     }
+        // });
     }
 
     openStartPage() {
-        this.model.updateState('start');
-    }
-
-    handleButtonsClicks() {
-        const signUpBtn = this.container.querySelector('#signup-btn');
-        const signInBtn = this.container.querySelector('#signin-btn');
-        const logoutBtn = this.container.querySelector('#logout-btn');
-
-        signUpBtn.addEventListener('click', (event) => this.updateState(event, 'signup'));
-        signInBtn.addEventListener('click', (event) => this.updateState(event, 'signin'));
-        logoutBtn.addEventListener('click', (event) => this.updateState(event, 'start'));
-    }
-
-    updateState(event, state) {
-        event.preventDefault();
-        this.model.updateState(state);
-
-        if (state === 'signup') {
-            this.handleSignUp();
-        }
-
-        if (state === 'signin') {
-            this.handleSignIn();
-        }
-
-        if (state === 'start') {
-            sessionStorage.removeItem('userId');
-        }
+        window.location.hash = '#start';
     }
 
     handleHashChange() {
         const pageId = location.hash.slice(1).toLowerCase();
+        localStorage.setItem('lastPage', pageId);
         this.model.updateState(pageId);
+
+        if (pageId === 'start') {
+            sessionStorage.removeItem('userId');
+        }
 
         if (pageId === 'addbook') {
             routes.addbook.addEventListeners();
         }
+
+        if (pageId === 'viewbook') {
+            routes.viewbook.addEventListeners();
+        }
+
+        if (pageId === 'search') {
+            routes.search.addEventListeners();
+        }
+
+        if (pageId === 'signup') {
+            routes.signup.addEventListeners();
+        }
+
+        if (pageId === 'signin') {
+            routes.signin.addEventListeners();
+        }
+
+        if (pageId === 'main') {
+            routes.main.addEventListeners();
+        }
+
+        if (pageId === 'all') {
+            routes.all.addEventListeners();
+        }
     }
 
-    handleSignUp() {
-        routes.signup.addEventListeners();
-    }
-
-    handleSignIn() {
-        console.log('SIGNIN')
-        routes.signin.addEventListeners();
-    }
-
-    handleBookCreation(event) {
-        event.preventDefault();
-        routes.login
-    }
 }
 
 export default class App {

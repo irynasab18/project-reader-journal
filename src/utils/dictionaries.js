@@ -6,7 +6,16 @@ module.exports.STATUSES = {
     FINISHED: 'Прочитано'
 };
 
+// module.exports.STATUSES1 = [
+//     'Не начато',
+//     'В процессе',
+//     'Отложено',
+//     'Не буду дочитывать',
+//     'Прочитано'
+// ];
+
 module.exports.GENRES = {
+    UNSET: 'Не указан',
     FANTASY: 'Фэнтези',
     SCIENCE_FICTION: 'Научная фантастика',
     MAGICAL_REALISM: 'Магический реализм',
@@ -27,7 +36,8 @@ module.exports.GENRES = {
     TRAVEL: 'Путешествия',
     TRUE_CRIME: 'Тру-крайм',
     HUMOR: 'Юмор',
-    POPULAR_SCIENCE: 'Научпоп'
+    POPULAR_SCIENCE: 'Научпоп',
+    COMPUTER_SCIENCE: 'IT литература',
 };
 
 module.exports.TAGS = {
@@ -46,7 +56,10 @@ module.exports.TAGS = {
     MYSTERIOUS: 'загадочная',
     DARK: 'темная',
     TOUCHING: 'трогательная',
-    REALISTIC: 'реалистичная'
+    REALISTIC: 'реалистичная',
+    USEFUL: 'полезная',
+    CALMING: 'успокаивающая',
+    THOUGHTFUL: 'заставляет задуматься',
 };
 
 module.exports.FORMATS = {

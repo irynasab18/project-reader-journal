@@ -1,5 +1,8 @@
 import Page from '../common/Page.js';
 import searchIcon from '../images/icon-search.svg';
+import { performSearch } from '../utils/search.js';
+import { drawFoundBookCards } from '../utils/helpers.js';
+import { addBook } from '../utils/data.js';
 
 export default class Search extends Page {
     constructor() {
@@ -8,9 +11,10 @@ export default class Search extends Page {
         });
         this.searchInput = null;
         this.searchBtn = null;
-        this.searchStr = null;
-        //this.render();
-        //this.addEventListeners();
+        this.searchStr = '';
+        this.title;
+        this.author;
+        this.cover;
     }
 
     render() {
@@ -20,7 +24,7 @@ export default class Search extends Page {
         </div>
         <div class="search-container">
             <button class="search-button">
-                <img src="${searchIcon}" alt="Поиск">
+                <img src="${searchIcon}" alt="Поиск" class="search-btn">
             </button>
             <input type="text" class="search-input" placeholder="Что будем искать?">
         </div>
@@ -33,29 +37,32 @@ export default class Search extends Page {
 
     addEventListeners() {
         const content = document.querySelector('.search-container');
-        content.addEventListener('click', event => this.callEventHandler(event));
-        content.addEventListener('input', event => this.checkFields(event));
+        if (content) {
+            content.addEventListener('click', event => this.callEventHandler(event));
+            content.addEventListener('input', event => this.checkFields(event));
+        }
     }
 
     checkFields(event) {
         event.preventDefault();
         this.searchInput = document.querySelector('.search-input');
+        const searchBtn = document.querySelector('.search-button')
 
-        if (searchInput.value) {
-            this.searchStr = searchInput.value;
+        if (this.searchInput.value && this.searchInput.value.length > 2) {
+            this.searchStr = this.searchInput.value;
         }
     }
 
-    callEventHandler(event) {
+    async callEventHandler(event) {
         event.preventDefault();
 
-        if (event.target.className === 'search-button') {
-            this.runSearch();
+        if (event.target.className === 'search-btn') {
+            await this.runSearch();
         }
     }
 
     async runSearch() {
-        let result = await searchForBooks(this.searchStr);
+        let result = await performSearch(this.searchStr);
         this.renderSearchResults(result);
     }
 
@@ -67,15 +74,51 @@ export default class Search extends Page {
             this.rerenderPage(`<div class="placeholder-text">Ничего не найдено. 
             Попробуйте изменить критерий поиска</div>`)
         } else {
-            //create card instances from SmallCard
-            //create html with cards
-            this.rerenderPage(/*list of rendered cards*/);
+            let booksHtml = drawFoundBookCards(res);
+            this.rerenderPage(booksHtml.join(''));
         }
     }
 
     rerenderPage(content) {
         const wrapper = document.querySelector('.wrap-list');
         wrapper.innerHTML = content;
+
+        wrapper.addEventListener('click', event => this.addBookToList(event));
+    }
+
+    async addBookToList(event) {
+        event.preventDefault();
+
+        let bookCard = event.target.parentNode.parentNode.parentNode;
+        let title = bookCard.querySelector('.book-title').textContent;
+        let author = bookCard.querySelector('.book-author').textContent;
+        let cover = bookCard.querySelector('img').src;
+
+        let data = {
+            title,
+            author,
+            cover
+        }
+
+        await this.saveBook(data);
+
+    }
+
+    async saveBook(initData) {
+        let data = {
+            userId: sessionStorage.getItem('userId'),
+            title: initData.title,
+            author: initData.author,
+            cover: initData.cover,
+            status: 'Не начато',
+            genre: 'Не указан',
+            pages: null,
+            format: null,
+            readPages: null,
+            expectations: null,
+            tags: []
+        }
+        await addBook(data);
     }
 
 

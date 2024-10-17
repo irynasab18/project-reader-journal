@@ -1,41 +1,36 @@
 import Page from '../common/Page.js';
 import btnLike from '../images/add_like.svg';
-import { getUserBooks } from '../utils/data.js';
+import { getUserBooks, updateBookStatus } from '../utils/data.js';
 import { normalizeBookCards, drawBookCards } from '../utils/helpers.js';
 
 export default class AllBooks extends Page {
     constructor() {
         super({
-            id: 'all',
-            content: `<div class="main-content-container">
-            <div class="content-header">
-                <h1 class="main-page-title">Мои книги</h1>
-                <a href="#addbook" id="add-book-btn" class="add-book-btn">
-                    <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
-                    Добавить книгу
-                </a>
-            </div>
-    
-            <div class="books-container"></div>`,
+            id: 'all'
         });
+        this.foundData = null;
     }
 
-    render() {
-        return this.renderInit();
-        this.renderAsync();
-    }
+    render(dataReceived = false) {
+        if (dataReceived && this.foundData) {
+            const bookContainer = document.querySelector('.books-container');
 
-    renderInit() {
+            if (bookContainer) {
+                bookContainer.innerHTML = this.foundData;
+            } else {
+                window.location.hash = '#main';
+            }
+        }
         return `<div class="main-content-container">
         <div class="content-header">
-            <h1 class="main-page-title">Мои книги</h1>
-            <a href="#addbook" id="add-book-btn" class="add-book-btn">
+            <h1 class="main-page-title">Все книги</h1>
+            <a href="#addBook" id="add-book-btn" class="add-book-btn">
                     <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
                     Добавить книгу
                 </a>
         </div>
 
-        <div class="books-container">${this.showPlaceholder()}</div>`
+        <div class="books-container">${this.showPlaceholder()}</div>`;
     }
 
     async renderAsync() {
@@ -43,22 +38,31 @@ export default class AllBooks extends Page {
         let bookCards = await getUserBooks(sessionStorage.getItem('userId'));
 
         if (bookCards && bookCards.length > 0) {
-            let bookObjects = normalizeBookCards(bookCards, 'main');
+            let bookObjects = normalizeBookCards(bookCards, 'all');
             booksHtml = drawBookCards(bookObjects);
 
             return this.drawFullPageWithCards(booksHtml);
         }
+    }
 
-        return `<div class="main-content-container">
-            <div class="content-header">
-                <h1 class="main-page-title">Мои книги</h1>
-                <a href="#addbook" id="add-book-btn" class="add-book-btn">
-                    <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
-                    Добавить книгу
-                </a>
-            </div>
-    
-            <div class="books-container">${allBooks}</div>`;
+    addEventListeners() {
+        const bookContainer = document.querySelector('.books-container');
+        if (bookContainer) {
+            bookContainer.addEventListener('click', (event) => {
+                event.preventDefault();
+                if (event.target.id === 'view-book') {
+                    sessionStorage.setItem('bookId', event.target.parentNode.parentNode.parentNode.id);
+                    window.location.hash = '#viewbook';
+                }
+            })
+
+            bookContainer.addEventListener('change', (event) => {
+                event.preventDefault();
+                if (event.target.className === 'form-select') {
+                    this.updateStatus(event);
+                }
+            });
+        }
     }
 
     showPlaceholder() {
@@ -70,8 +74,8 @@ export default class AllBooks extends Page {
         </div>`;
     }
 
-    async getUserBooks(userId, status) {
-        let booksArray = await getUserBooks(userId, status);
+    async getUserBooks(userId) {
+        let booksArray = await getUserBooks(userId);
         if (booksArray && booksArray.length) {
             return booksArray;
         }
@@ -79,18 +83,14 @@ export default class AllBooks extends Page {
     }
 
     drawFullPageWithCards(cards) {
-        let content = cards.join();
-        console.log('CONTENT ', content)
-        return `<div class="main-content-container">
-        <div class="content-header">
-            <h1 class="main-page-title">Читаю сейчас</h1>
-            <a href="#addbook" id="add-book-btn" class="add-book-btn">
-                <img src="${btnLike}" alt="Иконка добавить книгу" class="add-icon">
-                Добавить книгу
-            </a>
-        </div>
-        <div class="books-container">${content}</div>`;
+        this.foundData = cards.join('');;
+        this.render(true);
     }
 
-
+    async updateStatus(event) {
+        event.preventDefault();
+        const bookId = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        let res = await updateBookStatus(bookId, event.target.value);
+        console.log(res)
+    }
 }

@@ -56,6 +56,10 @@ select {
     flex: 0 0 9.5625rem;
 }
 
+.logo-link {
+    cursor: pointer;
+}
+
 .menu {
     flex-grow: 1;
     /*display: flex;*/
@@ -131,7 +135,10 @@ select {
     text-decoration: none;
 }
 
-
+.error-message {
+    font-size: 1rem;
+    color: rgb(90, 21, 21);
+}
 
 
 
@@ -205,15 +212,18 @@ select {
 .books-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.5rem;
+    gap: 1rem;
     justify-content: space-between;
+    margin-top: 2rem;
 }
 
 /* Стили для адаптивности карточек книг */
 .books-container>.book-card {
-    flex: 1 1 calc(33.333% - 1rem);
-    min-width: 12.5rem;
-    max-width: 50%;
+    flex: 1 1 calc(50% - 1rem);
+    /* Каждая карточка занимает половину строки */
+    min-width: calc(50% - 1rem);
+    /* Минимальная ширина карточки — 50% строки с учетом отступа */
+    max-width: calc(50% - 1rem);
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 1.5rem;
@@ -319,6 +329,7 @@ select {
 .book-more {
     display: flex;
     justify-content: flex-end;
+    cursor: pointer;
 }
 
 /* Ссылка "Смотреть больше"*/
@@ -367,6 +378,7 @@ select {
     padding: 3rem;
     border-radius: 1rem;
     box-shadow: 0rem 0.125rem 0.5rem 0.125rem rgba(10, 10, 22, 0.1);
+    justify-content: space-between;
 }
 
 
@@ -798,9 +810,9 @@ select {
     align-items: center;
 }
 
-.book-cover img {
-    width: 8.625rem;
-    height: 13rem;
+.book-cover-view img {
+    width: 100%;
+    height: 100%;
     border-radius: 0.4375rem;
 }
 
@@ -858,6 +870,10 @@ select {
     font-size: 0.875rem;
     color: #2C213D;
     margin-top: 0.75rem;
+}
+
+.status-view {
+    margin-top: 2rem;
 }
 
 .book-tags {
@@ -1091,6 +1107,7 @@ select {
     align-items: center;
     justify-content: space-evenly;
     margin-top: 2rem;
+    gap: 1.5rem;
 }
 
 /* Адаптивные стили для мобильных устройств */
@@ -1173,6 +1190,12 @@ select {
 
     .book-form {
         flex-direction: column;
+    }
+
+    .book-info-column-left,
+    .book-info-column-right {
+        flex: 1 1 100%;
+        /* Теперь обе колонки будут занимать 100% ширины и оборачиваться */
     }
 }
 

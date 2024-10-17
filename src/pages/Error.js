@@ -4,9 +4,9 @@ export default class ErrorPage extends Page {
   constructor() {
     super({
       id: 'error',
-      metaTitle: 'Achtung, warning, kujdes, attenzione, pozornost...',
+      metaTitle: 'Error',
       title: 'Ошибка 404',
-      content: '<p>Страница не найдена, попробуйте вернуться на <a href="#main">главную</a>.</p>',
+      content: '<p>Ошибка 404. Страница не найдена, попробуйте вернуться на <a href="#main">главную</a>.</p>',
     });
   }
 }

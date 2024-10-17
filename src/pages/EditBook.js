@@ -1,21 +1,21 @@
 import Page from '../common/Page.js';
-import { STATUSES } from '../utils/dictionaries.js';
-import { GENRES } from '../utils/dictionaries.js';
-import { TAGS } from '../utils/dictionaries.js';
-import { FORMATS } from '../utils/dictionaries.js';
+import { STATUSES, GENRES, TAGS, FORMATS } from '../utils/dictionaries.js';
 import { updateBook } from '../utils/data.js';
+import { addOptsToList } from '../utils/helpers.js';
+import defaultCover from '../images/no-image.svg';
 
-export default class Edit extends Page {
-    constructor(id) {
+export default class EditBook extends Page {
+    constructor() {
         super({
-            id: 'edit-book',
-            content: this.render()
+            id: 'editbook'
         });
-        this.id = id;
-        this.bookTitle = null;
+
+        this.bookId = null;
+        this.bookData = null;
+
+        this.title = null;
         this.author = null;
-        this.file = null;
-        this.author = null;
+        this.cover = null;
         this.genre = null;
         this.pages = null;
         this.status = null;
@@ -24,128 +24,168 @@ export default class Edit extends Page {
         this.expectations = null;
         this.tags = null;
 
-        addEventListeners();
+        this.newBookData = null;
+        this.newTitle = null;
+        this.newAuthor = null;
+        this.newCover = null;
+        this.newGenre = null;
+        this.newPages = null;
+        this.newStatus = null;
+        this.newFormat = null;
+        this.newReadPages = null;
+        this.newExpectations = null;
+        this.newTags = null;
     }
 
     render() {
-        this.getBookData();
+        if (this.bookData && this.editBookForm) {
+            const container = document.querySelector('.container');
+            container.innerHTML = this.editBookForm;
+        }
+        this.addEventListeners();
+        return `<main class="container"><div class="book-content-container">
+        <div class="book-info-container">Загружаем...</div>
+        </div></div>`
+    }
 
-        return `<div class="book-content-container">
-        <h1 class="page-title">Редактирование книги</h1>
-        <form class="book-form">
-            <div class="form-column">
-                <div class="form-group file-upload">
-                    <div class="file-name-wrapper">
-                        <button type="button" id="remove-file" class="remove-file-btn"
-                            style="display: none;">X</button>
-                        <span id="file-name" class="file-name">Обложка книги</span>
+    async renderAsync() {
+        this.bookId = sessionStorage.getItem('bookId');
+        console.log('EDIT BOOK ID ', this.bookId)
+        if (this.bookId) {
+            let bookData = JSON.parse(sessionStorage.getItem('bookData')) || await this.getCurrentBook();
+            console.log('EDIT BOOK DATA ', bookData)
+
+            if (bookData && bookData.title) {
+                this.bookData = bookData;
+                this.setOldData();
+
+                this.editBookForm = `<div class="book-content-container">
+                <h1 class="page-title">Редактирование книги</h1>
+                <form class="book-form">
+                    <div class="form-column">
+                        <div class="form-group file-upload">
+                            <div class="file-name-wrapper">
+                                <button type="button" id="remove-file" class="remove-file-btn"
+                                    style="display: none;">X</button>
+                                <span id="file-name" class="file-name">Обложка книги</span>
+                            </div>
+                            <input type="file" id="cover-upload" class="form-input-hidden">
+                            <label for="cover-upload" class="btn-add-file btn-outline file-upload-btn">+ Добавить
+                                обложку</label>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="author" class="form-label required">Автор</label>
+                            <input type="text" id="author" class="form-input" value="${this.author}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pages" class="form-label">Количество страниц</label>
+                            <input type="number" id="pages" class="form-input" value="${this.bookPages}">
+                        </div>
+                        <div class="form-group">
+                            <label for="status" class="form-label required">Статус</label>
+                            ${this.addStatusInput()}
+                        </div>
+                        <div class="form-group">
+                            <label for="format" class="form-label">Формат</label>
+                            ${this.addFormatInput()}
+                        </div>
                     </div>
-                    <input type="file" id="cover-upload" class="form-input-hidden">
-                    <label for="cover-upload" class="btn-add-file btn-outline file-upload-btn">+ Добавить
-                        обложку</label>
-                </div>
-
-                <div class="form-group">
-                    <label for="author" class="form-label required">Автор</label>
-                    <input type="text" id="author" class="form-input" required value=${this.author}>
-                </div>
-                <div class="form-group">
-                    <label for="pages" class="form-label">Количество страниц</label>
-                    <input type="number" id="pages" class="form-input" value=${this.pages}>
-                </div>
-                <div class="form-group">
-                    <label for="status" class="form-label required">Статус</label>
-                    <select id="status" class="form-select" required>
-                        ${this.addOptsToList(STATUSES)}
-                        ${this.showSelectedValue(this.status)}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="format" class="form-label">Формат</label>
-                    <select id="format" class="form-select">
-                    ${this.addOptsToList(FORMATS)}
-                    ${this.showSelectedValue(this.format)}
-                    </select>
-                </div>
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="title" class="form-label required">Название книги</label>
+                            <input type="text" id="title" class="form-input" value="${this.title}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="genre" class="form-label required">Жанр</label>
+                            ${this.addGenresInput()}
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="read-pages" class="form-label">Количество прочитанных страниц</label>
+                            <input type="number" id="read-pages" class="form-input" value="${this.readBookPages}">
+                        </div>
+                        <div class="form-group">
+                            <label for="expectations" class="form-label">Ожидания</label>
+                            <input type="text" id="expectations" class="form-input" value="${this.expectations}">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="tags" class="form-label">Тэги</label>
+                            <select id="tags" class="form-select" multiple size="1">
+                                ${addOptsToList(TAGS)}
+                                ${this.tags}
+                            </select>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-outline">Назад</button>
+                            <button type="submit" class="btn btn-primary" disabled=true>Сохранить</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="form-column">
-                <div class="form-group">
-                    <label for="title" class="form-label required">Название книги</label>
-                    <input type="text" id="title" class="form-input" required value=${this.bookTitle}>
-                </div>
-                <div class="form-group">
-                    <label for="genre" class="form-label required">Жанр</label>
-                    <select id="genre" class="form-select" required>
-                        ${this.addOptsToList(GENRES)}
-                        ${this.showSelectedValue(this.genre)}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="read-pages" class="form-label">Количество прочитанных страниц</label>
-                    <input type="number" id="read-pages" class="form-input" value=${this.readPages}>
-                </div>
-                <div class="form-group">
-                    <label for="expectations" class="form-label">Ожидания</label>
-                    <input type="text" id="expectations" class="form-input" value=${this.expectations}>
-                </div>
-                <div class="form-group">
-                    <label for="tags" class="form-label">Тэги</label>
-                    <select id="tags" class="form-select" multiple size="1">
-                        ${this.addOptsToList(TAGS)}
-                        ${this.showSelectedValue(this.tags)}
-                    </select>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-outline">Назад</button>
-                    <button type="submit" class="btn btn-primary" disabled=false>Сохранить</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    </div>`
-    };
+            </div>`;
 
-    getBookData() {
-        //request to DB and re-assign variables
-        this.bookTitle = null;
-        this.author = null;
-        this.file = null;
-        this.author = null;
-        this.genre = null;
-        this.pages = null;
-        this.status = null;
-        this.format = null;
-        this.readPages = null;
-        this.expectations = null;
-        this.tags = null;
+                this.render();
+                this.addEventListeners();
+            }
+
+            return `<div class="book-content-container">
+                <div class="book-info-container">Что-то пошло не так :(</div>
+                </div>`
+        }
     }
 
     addEventListeners() {
         const content = document.querySelector('.container');
-        content.addEventListener('click', event => this.callEventHandler(event));
+        if (content) {
+            content.addEventListener('click', event => this.callEventHandler(event));
+            content.addEventListener('input', event => this.checkFields(event));
+        }
     }
 
-    callEventHandler(event) {
+    async getCurrentBook() {
+        return await getBook(this.bookId);
+    }
+
+    setOldData() {
+        console.log('SET OLD DATA ', this.bookData)
+        this.title = this.bookData.title;
+        this.author = this.bookData.author;
+        this.cover = this.bookData.cover ? this.bookData.cover : defaultCover;
+        this.genre = this.bookData.genre;
+        this.pages = this.bookData.pages ? this.bookData.pages : '';
+        this.status = this.bookData.status;
+        this.format = this.bookData.format ? this.bookData.format : '';
+        this.readPages = this.bookData.readPages ? this.bookData.readPages : '';
+        this.expectations = this.bookData.expectations ? this.bookData.expectations : '';
+        this.tags = this.showSelectedValue(this.bookData.tags) ? this.showSelectedValue(this.bookData.tags) : '';
+    }
+
+    async callEventHandler(event) {
+        console.log(event)
         event.preventDefault();
-        if (event.target.className === 'form-input-hidden') {
+        if (event.target.className === 'btn-add-file btn-outline file-upload-btn') {
+
             this.uploadFile(event.target);
         }
         if (event.target.className === 'remove-file-btn') {
             this.deleteUploadedFile(event.target);
         }
         if (event.target.className === 'btn btn-outline') {
-            //open previous page
+            window.location.hash = '#viewbook';
         }
-        if (event.target.className === 'btn btn-primary') {
-            this.saveBook();
-            //update book in DB
+        if (event.target.type === 'submit') {
+            await this.updateBook();
+            window.location.hash = '#viewbook';
         }
+
     }
 
     uploadFile(elem) {
         elem.addEventListener('change', event => {
             event.preventDefault();
-            const fileName = this.files[0] ? this.files[0].name : 'Обложка книги';
+            this.newFileName = this.files[0] ? this.files[0].name : 'Обложка книги';
             document.getElementById('file-name').textContent = fileName;
 
             if (this.files[0]) {
@@ -158,29 +198,15 @@ export default class Edit extends Page {
         elem.addEventListener('click', event => {
             event.preventDefault();
             const fileInput = document.getElementById('cover-upload');
-            fileInput.value = ''; // Сбрасываем значение поля
-            document.getElementById('file-name').textContent = 'Обложка книги'; // Возвращаем текст по умолчанию
-            this.style.display = 'none'; // Скрываем кнопку удаления
+            fileInput.value = '';
+            document.getElementById('file-name').textContent = 'Обложка книги';
+            this.style.display = 'none';
         })
     }
 
-    addOptsToList(list) {
-        let output = [];
-        for (let elem in list) {
-            output.push(`<option>${elem}</option>`);
-        };
+    checkFields(event) {
+        event.preventDefault();
 
-        return output;
-    }
-
-    showSelectedValue(value) {
-        if (Array.isArray(value)) {
-            return value.map(v => `<option selected>${v}</option>`)
-        }
-        return `<option selected>${value}</option>`;
-    }
-
-    checkFields() {
         const authorInput = document.querySelector('#author'); //madatory
         const pagesInput = document.querySelector('#pages');
         const statusInput = document.querySelector('#status'); //madatory
@@ -191,53 +217,131 @@ export default class Edit extends Page {
         const expectationsInput = document.querySelector('#expectations');
         const tagsInput = document.querySelector('#tags');
 
+        const imgElement = document.querySelector('.book-cover-view img') || null;
+        if (imgElement) {
+            this.newCover = imgElement.getAttribute('src') || this.cover;
+        } else {
+            this.newCover = this.cover;
+        }
+
         if (authorInput.value) {
-            this.author = authorInput.value;
+            this.newAuthor = authorInput.value;
         }
 
         if (pagesInput.value) {
-            this.pages = pagesInput.value;
+            this.newPages = pagesInput.value;
         }
 
         if (statusInput.value) {
-            this.status = statusInput.value;
+            this.newStatus = statusInput.value;
         }
 
         if (formatInput.value) {
-            this.format = formatInput.value;
+            this.newFormat = formatInput.value;
         }
 
         if (titleInput.value) {
-            this.bookTitle = titleInput.value;
+            this.newTitle = titleInput.value;
         }
 
         if (genreInput.value) {
-            this.genre = genreInput.value;
+            this.newGenre = genreInput.value;
         }
 
         if (pagesReadInput.value) {
-            this.readPages = pagesReadInput.value;
+            this.newReadPages = pagesReadInput.value;
         }
 
         if (expectationsInput.value) {
-            this.expectations = expectationsInput.value;
+            this.newExpectations = expectationsInput.value;
         }
 
-        if (tagsInput.selectedOptions) {
-            this.tags = selectedOptions.map(option => option.value);
+        if (tagsInput && tagsInput.options) {
+            this.newTags = [];
+            for (let opt of tagsInput.options) {
+                if (opt.selected === true) {
+                    this.newTags.push(opt.innerText)
+                }
+            }
         }
 
-        if (this.author && this.bookTitle && this.genre && this.status) {
+        if (authorInput.value && titleInput.value && genreInput.value && statusInput.value) {
             document.querySelector('.btn-primary').disabled = false;
         } else {
             document.querySelector('.btn-primary').disabled = true;
         }
     }
 
-    saveBook() {
-        //data object
-        let data = {}; //hash with updated fields
-        updateBook(this.id, data);  //call DB utils
+    async updateBook() {
+        let data = {
+            title: this.newTitle,
+            author: this.newAuthor,
+            cover: this.newCover,
+            status: this.newStatus,
+            genre: this.newGenre,
+            pages: this.newPages,
+            format: this.newFormat,
+            readPages: this.newReadPages,
+            expectations: this.newExpectations,
+            tags: this.newTags
+        }
+        await updateBook(this.bookId, data); //call DB utils
     }
 
+    showSelectedValue(value) {
+        if (Array.isArray(value)) {
+            let arr = value.map(v => `<option selected>${v}</option>`);
+            return arr.join('');
+        }
+        return `<option selected>${value}</option>`;
+    }
+
+    addStatusInput() {
+        let stats = [];
+        let statuses = Object.values(STATUSES);
+
+        for (let key in statuses) {
+            if (statuses[key] !== this.status) {
+                stats.push(`<option>${statuses[key]}</option>`);
+            }
+        };
+
+        return `<select id="status" class="form-select" required>
+            ${stats.join('')}
+            <option selected>${this.status}</option>
+        </select>`
+    }
+
+    addFormatInput() {
+        let fors = [];
+        let formats = Object.values(FORMATS);
+
+        for (let key in formats) {
+            if (formats[key] !== this.format) {
+                fors.push(`<option>${formats[key]}</option>`);
+            }
+        };
+
+        return `<select id="format" class="form-select">
+            ${fors.join('')}
+            <option selected>${this.format}</option>
+        </select>`
+    }
+
+    addGenresInput() {
+        let gers = [];
+        let genres = Object.values(GENRES);
+
+        for (let key in genres) {
+            if (genres[key] !== this.genre) {
+                gers.push(`<option>${genres[key]}</option>`);
+            }
+        };
+
+        return `<select id="genre" class="form-select">
+            ${gers.join('')}
+            <option selected>${this.genre}</option>
+        </select>`
+    }
 }
+

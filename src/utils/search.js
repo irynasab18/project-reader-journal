@@ -1,4 +1,5 @@
 import { appKey } from '../../configs/config.js';
+import imagePlaceholder from '../images/no-image.svg';
 
 async function performSearch(query) {
     const apiUrl = 'https://www.googleapis.com/books/v1/volumes';
@@ -22,18 +23,28 @@ async function performSearch(query) {
 
 function handleSearchResponse(data) {
     let response = [];
-    console.log(data.items[0].volumeInfo)
+    console.log(data)
 
-    for (let i = 0; i < 3; i++) {
-        let book = {};
-        book.name = data.items[i].volumeInfo.title;
-        book.author = data.items[i].volumeInfo.authors.join(', ');
-        book.coverLink = data.items[i].volumeInfo.imageLinks.thumbnail;
-        response.push(book);
+    if (data && data.items && data.items.length > 0) {
+        for (let i = 0; i < 3; i++) {
+            let book = {};
+            book.title = data.items[i].volumeInfo.title ? data.items[i].volumeInfo.title.join(', ') : 'Название не указано';
+
+            book.author = data.items[i].volumeInfo.authors ? data.items[i].volumeInfo.authors.join(', ') : 'Автор не указан';
+
+            if (data.items[i].volumeInfo.imageLinks && data.items[i].volumeInfo.imageLinks.thumbnail) {
+                book.coverLink = data.items[i].volumeInfo.imageLinks.thumbnail;
+            } else {
+                book.coverLink = imagePlaceholder;
+            }
+
+            response.push(book);
+        }
+
+        return response;
     }
 
-    return response;
-
+    return data;
 }
 
 export { performSearch };

@@ -1,10 +1,11 @@
 import { STATUSES } from '../utils/dictionaries.js';
-import bookCover from '../images/book-cover.jpeg';
+import defaultCover from '../images/no-image.svg';
+import { flattenCardObject } from '../utils/helpers.js'
 
 export default class SmallCard {
-    constructor(id, type, title, author, cover = bookCover, options = {}) {
+    constructor(id = null, type, title, author, cover, options = {}) {
         this.id = id;
-        this.cover = cover;
+        this.cover = cover || defaultCover;
         this.title = title;
         this.author = author;
         this.options = options;
@@ -12,7 +13,6 @@ export default class SmallCard {
     }
 
     render(className = 'card') {
-        console.log('RENDER')
         if (this.type === 'search') {
             return this.constructSearchCard();
         }
@@ -29,7 +29,7 @@ export default class SmallCard {
 
     constructSearchCard() {
         return `
-        <div class="book-card" id=${this.id}>
+        <div class="book-card">
         <div class="book-cover">
             <img src="${this.cover}" alt="Обложка книги">
         </div>
@@ -37,13 +37,16 @@ export default class SmallCard {
             <div class="book-details">
                 <h3 class="book-title">${this.title}</h3>
                 <p class="book-author">${this.author}</p>
+            </div>
+            <div class="book-more">
+            <a class="menu-item">Добавить в список</a>
+        </div>
         </div>
     </div>
     `;
     }
 
     constructMainCard() {
-        console.log('MAIN')
         let tags = '';
         let pages = '';
 
@@ -77,8 +80,8 @@ export default class SmallCard {
     }
 
     constructAllCard() {
-        let tags = null;
-        let pages = null;
+        let tags = '';
+        let pages = '';
 
         if (this.options.tags && this.options.tags > 0) {
             tags = this.addTags();
@@ -112,89 +115,50 @@ export default class SmallCard {
     }
 
     addTags() {
-        // const bookTags = document.createElement('div');
-        // bookTags.classList.add('book-tags');
-        // this.options.tags.forEach(tag => {
-        //     const tagElem = document.createElement('div');
-        //     tagElem.classList.add('tag');
-        //     tagElem.value = tag;
-        //     bookTags.append(tagElem);
-        // })
+        if (this.options && this.options.tags) {
+            let tagElems = this.options.tags.map(tag => {
+                return `<div class="tag">${tag.stringValue}</div>`
+            });
 
-        // const bookDetails = document.querySelector('.book-details');
-        // bookDetails.append(bookTags);
-
-        let tagElems = this.options.tags.map(tag => {
-            return `<div class="tag">${tag}</div>`
-        });
-
-        return `<div class="book-tags">
-                    ${tagElems}
-                </div>`;
+            return `<div class="book-tags">
+                        ${tagElems.join('')}
+                    </div>`;
+        }
+        return '';
     }
 
     addPages() {
-        // const bookPages = document.createElement('p');
-        // bookPages.classList.add('book-pages');
-
-        // const readPages = document.createElement('span');
-        // readPages.classList.add('pages-read');
-        // readPages.value = this.options.readPages;
-
-        // const separator = document.createElement('span');
-        // separator.value = '/';
-
-        // const allPages = document.createElement('span');
-        // allPages.classList.add('pages-read');
-        // allPages.value = this.options.allPages;
-
-        // const readStr = document.createElement('span');
-        // readStr.value = 'страниц прочитано';
-
-        // bookPages.append(readPages);
-        // bookPages.append(separator);
-        // bookPages.append(allPages);
-        // bookPages.append(readStr);
-
-        // const bookDetails = document.querySelector('.book-details');
-        // bookDetails.append(bookPages);
-
-        return `<p class="book-pages">
-        <span class="pages-read">${this.options.readPages}</span>
-        <span>/</span>
-        <span class="total-pages">${this.options.allPages}</span>
-        <span>страниц прочитано</span>
-    </p>;`
+        if (this.options && this.options.readPages && this.options.pages) {
+            return `<p class="book-pages">
+            <span class="pages-read">${this.options.readPages}</span>
+            <span>/</span>
+            <span class="total-pages">${this.options.pages}</span>
+            <span>страниц прочитано</span>
+        </p>;`
+        }
+        return '';
     }
 
     addMoreBtn() {
-        // const moreBtnContainer = document.createElement('div');
-        // moreBtnContainer.classList.add('book-more');
-
-        // const moreBtn = document.createElement('a');
-        // moreBtn.classList.add('menu-item');
-        // moreBtn.href = '#';
-        // moreBtn.value = 'Смотреть больше';
-        // moreBtnContainer.append(moreBtn);
-
-        // const bookDetails = document.querySelector('.book-info');
-        // bookDetails.append(moreBtnContainer);
-
         return `<div class="book-more">
-        <a href="#" class="menu-item">Смотреть больше</a>
+        <a href="#" class="menu-item" id="view-book">Смотреть больше</a>
     </div>`;
     }
 
     addStatusInput() {
         let stats = [];
+        let statuses = Object.values(STATUSES);
 
-        for (let status in STATUSES) {
-            stats.push(`<option>${status}</option>`);
+        for (let key in statuses) {
+            if (statuses[key] !== this.options.status) {
+                stats.push(`<option>${statuses[key]}</option>`);
+            }
         };
 
         return `<div class="form-group book-status">
         <select id="status" class="form-select">
-            ${stats}
+            ${stats.join('')}
+            <option selected>${this.options.status}</option>
         </select>
     </div>`;
     }
