@@ -5,7 +5,7 @@ async function performSearch(query) {
     const apiUrl = 'https://www.googleapis.com/books/v1/volumes';
     const queryParams = new URLSearchParams({
         q: query,
-        apiKey: appKey
+        apiKey: process.env.BOOKS_API_KEY
     });
 
     try {
@@ -28,7 +28,7 @@ function handleSearchResponse(data) {
     if (data && data.items && data.items.length > 0) {
         for (let i = 0; i < 3; i++) {
             let book = {};
-            book.title = data.items[i].volumeInfo.title ? data.items[i].volumeInfo.title.join(', ') : 'Название не указано';
+            book.title = data.items[i].volumeInfo.title ? data.items[i].volumeInfo.title : 'Название не указано';
 
             book.author = data.items[i].volumeInfo.authors ? data.items[i].volumeInfo.authors.join(', ') : 'Автор не указан';
 

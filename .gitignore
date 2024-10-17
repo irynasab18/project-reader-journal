@@ -3,3 +3,4 @@ node_modules
 test
 .parcel-cache
 dist
+.env
