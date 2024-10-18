@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@parcel/watcher": "^2.4.1",
-    "@parcel/watcher-darwin-arm64": "^2.4.2-alpha.0",
     "firebase": "^10.14.0",
     "node-fetch": "^3.3.2"
   }
