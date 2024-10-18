@@ -4,7 +4,7 @@
   "description": "Reader journal",
   "scripts": {
     "dev": "parcel index.html",
-    "build": "parcel build index.html",
+    "build": "parcel build index.html --no-minify",
     "clean": "parcel clean"
   },
   "author": "Iryna Sabaleuskaya",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@parcel/watcher": "^2.4.1",
+    "@parcel/watcher-darwin-arm64": "^2.4.2-alpha.0",
     "firebase": "^10.14.0",
     "node-fetch": "^3.3.2"
   }
