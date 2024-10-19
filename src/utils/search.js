@@ -1,4 +1,3 @@
-import { appKey } from '../../configs/config.js';
 import imagePlaceholder from '../images/no-image.svg';
 
 async function performSearch(query) {
