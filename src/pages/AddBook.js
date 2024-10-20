@@ -101,9 +101,7 @@ export default class AddBook extends Page {
 
         const fileInput = document.getElementById('cover-upload');
         if (fileInput) {
-            console.log(fileInput)
             fileInput.addEventListener('change', function (event) {
-                console.log('Change event triggered');
                 this.uploadFile(event);
             });
         }
@@ -128,8 +126,7 @@ export default class AddBook extends Page {
     }
 
     uploadFile(event) {
-        event.preventDefault()
-        console.log(event)
+        event.preventDefault();
         const fileName = event.target.files[0] ? event.target.files[0].name : 'Обложка книги';
         document.getElementById('file-name').textContent = fileName;
 

@@ -163,32 +163,3 @@ export default class SmallCard {
     </div>`;
     }
 }
-
-
-/* <div class="book-card">
-        <div class="book-cover">x
-            <img src="${this.cover}" alt="Обложка книги">
-        </div>
-        <div class="book-info">
-            <div class="book-details">
-                <h3 class="book-title">${this.title}</h3>
-                <p class="book-author">${this.author}</p>
-
-                <p class="book-pages">
-                    <span class="pages-read">${this.options.readPages}</span>
-                    <span>/</span>
-                    <span class="total-pages">${this.options.allPages}</span>
-                    <span>страниц прочитано</span>
-                </p>
-
-                <div class="book-tags">
-                    <div class="tag">Фантастика</div>
-                    <div class="tag">Приключения</div>
-                </div>
-
-            </div>
-            <div class="book-more">
-                <a href="#" class="menu-item">Смотреть больше</a>
-            </div>
-        </div>
-    </div> */

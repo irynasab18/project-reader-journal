@@ -50,10 +50,8 @@ export default class EditBook extends Page {
 
     async renderAsync() {
         this.bookId = sessionStorage.getItem('bookId');
-        console.log('EDIT BOOK ID ', this.bookId)
         if (this.bookId) {
             let bookData = JSON.parse(sessionStorage.getItem('bookData')) || await this.getCurrentBook();
-            console.log('EDIT BOOK DATA ', bookData)
 
             if (bookData && bookData.title) {
                 this.bookData = bookData;
@@ -80,7 +78,7 @@ export default class EditBook extends Page {
                         </div>
                         <div class="form-group">
                             <label for="pages" class="form-label">Количество страниц</label>
-                            <input type="number" id="pages" class="form-input" value="${this.bookPages}">
+                            <input type="number" id="pages" class="form-input" value="${this.pages}">
                         </div>
                         <div class="form-group">
                             <label for="status" class="form-label required">Статус</label>
@@ -103,7 +101,7 @@ export default class EditBook extends Page {
     
                         <div class="form-group">
                             <label for="read-pages" class="form-label">Количество прочитанных страниц</label>
-                            <input type="number" id="read-pages" class="form-input" value="${this.readBookPages}">
+                            <input type="number" id="read-pages" class="form-input" value="${this.readPages}">
                         </div>
                         <div class="form-group">
                             <label for="expectations" class="form-label">Ожидания</label>
@@ -127,7 +125,6 @@ export default class EditBook extends Page {
             </div>`;
 
                 this.render();
-                this.addEventListeners();
             }
 
             return `<div class="book-content-container">
@@ -149,7 +146,6 @@ export default class EditBook extends Page {
     }
 
     setOldData() {
-        console.log('SET OLD DATA ', this.bookData)
         this.title = this.bookData.title;
         this.author = this.bookData.author;
         this.cover = this.bookData.cover ? this.bookData.cover : defaultCover;
@@ -163,7 +159,6 @@ export default class EditBook extends Page {
     }
 
     async callEventHandler(event) {
-        console.log(event)
         event.preventDefault();
         if (event.target.className === 'btn-add-file btn-outline file-upload-btn') {
 
@@ -173,7 +168,7 @@ export default class EditBook extends Page {
             this.deleteUploadedFile(event.target);
         }
         if (event.target.className === 'btn btn-outline') {
-            window.location.hash = '#viewbook';
+            this.warnUnsavedChanges();
         }
         if (event.target.type === 'submit') {
             await this.updateBook();
@@ -342,6 +337,13 @@ export default class EditBook extends Page {
             ${gers.join('')}
             <option selected>${this.genre}</option>
         </select>`
+    }
+
+    warnUnsavedChanges() {
+        let result = confirm(`Вы действительно хотите вернуться назад? Несохраненные изменения будут потеряны`);
+        if (result) {
+            window.location.hash = '#viewbook';
+        }
     }
 }
 

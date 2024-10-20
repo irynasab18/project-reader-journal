@@ -12,6 +12,7 @@ import ContentContainer from './components/ContentContainer.js';
 import ErrorPage from './pages/Error.js';
 
 import './styles/styles.css';
+import './styles/styles-animation.css';
 
 const components = {
     header: new Header(),
@@ -67,13 +68,6 @@ class View {
             route.renderAsync();
         }
     }
-
-    // updateMenu(activePage) {
-    //     this.links.forEach((link) => {
-    //         const href = link.getAttribute('href').substring(1);
-    //         link.classList.toggle('active', href === activePage);
-    //     });
-    // }
 }
 
 class Model {
@@ -97,15 +91,6 @@ class Controller {
         sessionStorage.removeItem('userId');
         this.openStartPage();
         this.handleHashChange();
-
-        // window.addEventListener('DOMContentLoaded', (event) => {
-        //     const lastPage = localStorage.getItem('lastPage');
-        //     if (lastPage) {
-        //         this.model.updateState(lastPage);
-        //     } else {
-        //         this.model.updateState('main');
-        //     }
-        // });
     }
 
     openStartPage() {
@@ -147,6 +132,10 @@ class Controller {
 
         if (pageId === 'all') {
             routes.all.addEventListeners();
+        }
+
+        if (pageId === 'start') {
+            routes.start.addEventListeners();
         }
     }
 

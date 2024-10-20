@@ -22,7 +22,6 @@ async function performSearch(query) {
 
 function handleSearchResponse(data) {
     let response = [];
-    console.log(data)
 
     if (data && data.items && data.items.length > 0) {
         for (let i = 0; i < 3; i++) {

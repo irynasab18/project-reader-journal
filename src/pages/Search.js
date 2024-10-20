@@ -98,10 +98,16 @@ export default class Search extends Page {
             title,
             author,
             cover
-        }
+        };
+
+        const btn = bookCard.querySelector('.menu-item');
+        btn.innerHTML = 'Добавлено!';
+        btn.style.cursor = 'default';
+        btn.style.textDecorator = 'none';
+        const wrapper = document.querySelector('.wrap-list');
+        wrapper.removeEventListener('click', this.addBookToList);
 
         await this.saveBook(data);
-
     }
 
     async saveBook(initData) {

@@ -60,7 +60,6 @@ async function getUserFromDatabase(userData) {
 }
 
 async function addBook(data) {
-    console.log(data)
     try {
         const docRef = await addDoc(collection(myDB, 'books'), {
             userId: data.userId,
@@ -78,7 +77,7 @@ async function addBook(data) {
             notes: []
         });
         console.log("Transaction successfully committed!");
-        console.log(docRef)
+
         return docRef.id;
     } catch (error) {
         const errorCode = error.code;
@@ -130,7 +129,6 @@ async function updateBook(id, data) {
 
 async function updateBookStatus(id, newStatus) {
     const sfDocRef = doc(myDB, "books", id);
-    console.log('BOOK ', sfDocRef)
     try {
         await runTransaction(myDB, async (transaction) => {
             const sfDoc = await transaction.get(sfDocRef);
@@ -206,7 +204,6 @@ async function setBookGrade(id, value) {
 
 async function deleteBook(id) {
     try {
-        console.log('DEL DB')
         await deleteDoc(doc(myDB, "books", id));
         console.log("Transaction successfully committed!");
     } catch (error) {

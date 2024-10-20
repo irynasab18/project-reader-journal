@@ -317,6 +317,5 @@ export default class ViewBook extends Page {
     async updateStatus(event) {
         event.preventDefault();
         let res = await updateBookStatus(this.bookId, event.target.value);
-        console.log(res)
     }
 }

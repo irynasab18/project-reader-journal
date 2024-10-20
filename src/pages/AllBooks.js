@@ -91,6 +91,5 @@ export default class AllBooks extends Page {
         event.preventDefault();
         const bookId = event.target.parentNode.parentNode.parentNode.parentNode.id;
         let res = await updateBookStatus(bookId, event.target.value);
-        console.log(res)
     }
 }
