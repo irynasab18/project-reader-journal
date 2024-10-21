@@ -11,12 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
 //     const hamburger = document.getElementById('hamburger');
 //     const mobileMenu = document.getElementById('mobileMenu');
 
-//     // Открытие/закрытие гамбургер-меню
 //     hamburger.addEventListener('click', () => {
 //         mobileMenu.classList.toggle('open');
 //     });
 
-//     // Скрытие меню при скролле вниз и показ при скролле вверх
 //     window.addEventListener('scroll', () => {
 //         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 //         if (scrollTop > lastScrollTop) {

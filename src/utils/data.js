@@ -1,4 +1,3 @@
-import { STATUSES } from '../utils/dictionaries.js';
 import { auth, myDB } from '../utils/firebase.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { collection, addDoc, query, where, getDocs, doc, getDoc, runTransaction, deleteDoc, arrayUnion } from "firebase/firestore";
