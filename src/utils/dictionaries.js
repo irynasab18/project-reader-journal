@@ -6,14 +6,6 @@ module.exports.STATUSES = {
     FINISHED: 'Прочитано'
 };
 
-// module.exports.STATUSES1 = [
-//     'Не начато',
-//     'В процессе',
-//     'Отложено',
-//     'Не буду дочитывать',
-//     'Прочитано'
-// ];
-
 module.exports.GENRES = {
     UNSET: 'Не указан',
     FANTASY: 'Фэнтези',

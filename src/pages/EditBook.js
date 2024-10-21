@@ -280,7 +280,7 @@ export default class EditBook extends Page {
             expectations: this.newExpectations,
             tags: this.newTags
         }
-        await updateBook(this.bookId, data); //call DB utils
+        await updateBook(this.bookId, data);
     }
 
     showSelectedValue(value) {

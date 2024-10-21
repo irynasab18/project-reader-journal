@@ -144,11 +144,11 @@ class Controller {
 export default class App {
     constructor(container) {
         this.container = container;
-        this.routes = routes; //from this module scope
-        this.components = components; //from this module scope
+        this.routes = routes;
+        this.components = components;
     }
 
-    renderComponents() { //SHOULD DIFFER LOGGED IN AND LOGGED OUT USERS TO RENDER HEADER
+    renderComponents() {
         this.container.innerHTML = `
             ${this.components.header.render()}
             ${this.components.content.render()}
